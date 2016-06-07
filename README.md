@@ -47,4 +47,5 @@ Reads the Processing info and determines the direction and speed of the car, bas
 ### PID Controller
 Reads the desired speed/direction from the AI module and translates it into efficient movements of the engine, using a PID algorithm.
 
-
+### Web module
+With the web module we should be able to configure the modules, start/stop it, etc.
