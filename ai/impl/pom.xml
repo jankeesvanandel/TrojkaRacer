@@ -12,4 +12,17 @@
     <artifactId>trojkaracer-ai-impl</artifactId>
     <packaging>jar</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>nl.jpoint.trojkaracer</groupId>
+            <artifactId>trojkaracer-ai-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.jpoint.trojkaracer</groupId>
+            <artifactId>trojkaracer-processing-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>
