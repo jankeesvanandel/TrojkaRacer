@@ -7,6 +7,11 @@
 
     <name>TrojkaRacer Processing</name>
 
+    <modules>
+        <module>api</module>
+        <module>impl</module>
+    </modules>
+
     <parent>
         <groupId>nl.jpoint.trojkaracer</groupId>
         <artifactId>trojkaracer-parent</artifactId>
