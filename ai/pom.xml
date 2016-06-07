@@ -7,21 +7,20 @@
 
     <name>TrojkaRacer AI</name>
 
-    <modules>
-        <module>api</module>
-        <module>impl</module>
-    </modules>
-
     <parent>
         <groupId>nl.jpoint.trojkaracer</groupId>
         <artifactId>trojkaracer-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>nl.jpoint.trojkaracer</groupId>
     <artifactId>trojkaracer-ai</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
+
+    <modules>
+        <module>api</module>
+        <module>impl</module>
+    </modules>
 
 </project>
