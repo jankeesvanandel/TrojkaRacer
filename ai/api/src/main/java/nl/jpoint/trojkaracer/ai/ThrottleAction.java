@@ -2,7 +2,7 @@ package nl.jpoint.trojkaracer.ai;
 
 public final class ThrottleAction {
 
-    private float throttleAmount;
+    private final float throttleAmount;
 
     public ThrottleAction(final float throttleAmount) {
         this.throttleAmount = throttleAmount;
