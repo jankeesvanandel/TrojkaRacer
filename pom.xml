@@ -17,6 +17,7 @@
       <module>processing</module>
       <module>ai</module>
       <module>pid</module>
+      <module>deadmans_switch</module>
     </modules>
 
     <properties>
