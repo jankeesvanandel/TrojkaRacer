@@ -1,3 +1,5 @@
+package nl.jpoint.trojkaracer;
+
 public interface ThrottleAction {
     /**
      * @return The desired throttle amount, as a number between -1 and +1.

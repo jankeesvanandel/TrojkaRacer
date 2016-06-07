@@ -1,3 +1,5 @@
+package nl.jpoint.trojkaracer;
+
 import java.util.Optional;
 
 public interface DesiredActions {
