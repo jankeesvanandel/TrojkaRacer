@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class TrackBoundaries {
+
     private final List<TrackHorizontalScan> scannedLines;
 
     public TrackBoundaries(final List<TrackHorizontalScan> scannedLines) {

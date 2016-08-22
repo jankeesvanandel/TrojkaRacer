@@ -6,10 +6,10 @@ import java.util.Properties;
 public class PropertyController {
 
     @Inject
-    PropertieStorage propertieStorage;
+    PropertiesStorage propertiesStorage;
 
     public Properties getAll(){
 
-        return propertieStorage.getAll();
+        return propertiesStorage.getAll();
     }
 }

@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Properties;
 
-public class PropertieStorage {
+public class PropertiesStorage {
 
     @Inject
     ApplicationProperties applicationProperties;
@@ -14,7 +14,7 @@ public class PropertieStorage {
     private final Properties properties;
 
     @Inject
-    public PropertieStorage(final ApplicationProperties applicationProperties) {
+    public PropertiesStorage(final ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
         properties = new Properties();
         try {

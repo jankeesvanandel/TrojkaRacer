@@ -1,6 +1,7 @@
 package nl.jpoint.trojkaracer.processing;
 
 public final class TrackHorizontalScan {
+
     private final int leftCoordinate;
     private final int rightCoordinate;
 
