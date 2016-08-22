@@ -5,9 +5,9 @@ import java.util.List;
 
 public class TrackBoundaries {
 
-    private final List<TrackHorizontalScan> scannedLines;
+    private final List<int[]> scannedLines;
 
-    public TrackBoundaries(final List<TrackHorizontalScan> scannedLines) {
+    public TrackBoundaries(List<int[]> scannedLines) {
         this.scannedLines = Collections.unmodifiableList(scannedLines);
     }
 
@@ -15,7 +15,7 @@ public class TrackBoundaries {
      * @return The track scan information, containing a list of scanned lines.
      * Every scanned line contains a left and right position.
      */
-    public List<TrackHorizontalScan> getScannedLines() {
-        return scannedLines;
+    public List<int[]> getScannedLines() {
+        return Collections.unmodifiableList(scannedLines);
     }
 }
