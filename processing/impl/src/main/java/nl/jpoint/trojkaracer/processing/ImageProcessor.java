@@ -72,6 +72,9 @@ public class ImageProcessor implements Runnable {
      * - Find the reddest area on the webcam and assume a red light (don't drive)
      * - Monitor this spot until it becomes green
      * - Calculate the track boundaries each loop
+     *
+     * TODO: Create a way so this method is called and loops all the time
+     * TODO: How are we bootstrapping all the code?
      */
     public void run() {
 
