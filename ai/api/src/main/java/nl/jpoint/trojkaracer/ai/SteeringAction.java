@@ -2,9 +2,9 @@ package nl.jpoint.trojkaracer.ai;
 
 public final class SteeringAction {
 
-    private final float steeringPosition;
+    private final double steeringPosition;
 
-    public SteeringAction(final float steeringPosition) {
+    public SteeringAction(final double steeringPosition) {
         this.steeringPosition = steeringPosition;
     }
 
@@ -12,7 +12,7 @@ public final class SteeringAction {
      * @return The desired steering position, as a number between -1 and +1, with 0 being exactly centered.
      * -1 is max right, +1 is max left.
      */
-    public float getSteeringPosition() {
+    public double getSteeringPosition() {
         return steeringPosition;
     }
 }

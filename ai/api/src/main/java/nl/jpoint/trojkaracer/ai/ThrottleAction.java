@@ -2,9 +2,9 @@ package nl.jpoint.trojkaracer.ai;
 
 public final class ThrottleAction {
 
-    private final float throttleAmount;
+    private final double throttleAmount;
 
-    public ThrottleAction(final float throttleAmount) {
+    public ThrottleAction(final double throttleAmount) {
         this.throttleAmount = throttleAmount;
     }
 
@@ -14,7 +14,7 @@ public final class ThrottleAction {
      * +1 is max throttle forwards.
      * -1 is max throttle reverse.
      */
-    public float getThrottleAmount() {
+    public double getThrottleAmount() {
         return throttleAmount;
     }
 }

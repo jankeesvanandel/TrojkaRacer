@@ -97,6 +97,7 @@ public class ImageProcessor implements Runnable {
         }
 
         // TODO: Calculate where the 'horizontal' lines are, the finish-area
+        // TODO: This also need to be added to the API
     }
 
     /**
