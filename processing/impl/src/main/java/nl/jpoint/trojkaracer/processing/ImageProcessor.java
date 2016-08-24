@@ -9,7 +9,9 @@ import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ImageProcessor implements Runnable {
 
@@ -19,9 +21,9 @@ public class ImageProcessor implements Runnable {
     private static final int LIGHT_SIZE = 20;
 
     // Amount of consecutive pixels to make up a border-tape:
-    private static final int TAPE_WIDTH_THRESHOLD = 3;
+    private static final int TAPE_WIDTH_THRESHOLD = 4;
     // Mean sqrt color error between TAPE_COLOR and camera
-    private static final double TAPE_PIXEL_ERROR_THRESHOLD = 100;
+    private static final double TAPE_PIXEL_ERROR_THRESHOLD = 80;
 
     // Color of the boundaries tape (in BGR):
     private static final int[] TAPE_COLOR = new int[] {20 ,20, 20};
@@ -31,11 +33,6 @@ public class ImageProcessor implements Runnable {
     private static final int[] GREEN_LIGHT_COLOR = new int[] {67 ,143, 74};
     // Horizon of the (flat) road, don't look above this line:
     private static final int WEBCAM_HORIZON = 120;
-
-    // When filtering the outliers from the track data, use this threshold:
-    private static final int NOISE_THRESHOLD = 20;
-    // When filtering the outliers use this much points to calculate the average:
-    private static final int NOISE_POINTS_AVERAGE = 7;
     // ----------------------------------------------------------------
 
     // Looping in pixel arrays the step is 3 (B/G/R)
@@ -180,12 +177,13 @@ public class ImageProcessor implements Runnable {
      */
     private TrackBoundaries calculateTrackBoundaries(BufferedImage image, byte[] pixels) {
 
-        List<int[]> scannedLines = new ArrayList<>();
+        Map<Integer, List<Integer>> scanlines = new HashMap<>();
 
         // For each row in the image, starting at the horizon (property setting)
         for(int y = WEBCAM_HORIZON; y < image.getHeight(); y++) {
 
             List<Integer> borders = new ArrayList<>();
+
             int consecutiveTapePixels = 0;
 
             // Scan the line, with overlapping pieces:
@@ -199,110 +197,120 @@ public class ImageProcessor implements Runnable {
                 } else {
                     // No more tape:
                     if(consecutiveTapePixels >= TAPE_WIDTH_THRESHOLD) {
-                        borders.add(x - (consecutiveTapePixels / 2));
+                        borders.add(x - consecutiveTapePixels);
+                        borders.add(x);
                     }
                     consecutiveTapePixels = 0;
                 }
             }
             // Clean up running consecutive counts:
             if(--consecutiveTapePixels >= TAPE_WIDTH_THRESHOLD) {
-                borders.add(image.getWidth() - 1 - (consecutiveTapePixels / 2));
+                borders.add(image.getWidth() - 1 - consecutiveTapePixels);
             }
 
             // Try to determine the road from the analysed data:
-            int[] scanline = new int[3];
-            scanline[0] = y;
-            if(borders.size() > 1) {
-                int maxLength = 0;
-                for(int borderPtr = 0; borderPtr < borders.size() - 1; borderPtr++) {
-                    int length = borders.get(borderPtr + 1) - borders.get(borderPtr);
-                    if(length > maxLength) {
-                        maxLength = length;
-                        scanline[1] = borders.get(borderPtr);
-                        scanline[2] = borders.get(borderPtr + 1);
-                    }
-                }
-                scannedLines.add(scanline);
+            if(borders.size() > 0) {
+                scanlines.put(y, borders);
             }
         }
 
-        List<int[]> filteredLines = filterOutliers(scannedLines);
+        List<int[]> calculatedBoundaries = extractBoundaries(image, scanlines);
 
-        //dumpDebugImage(image, scannedLines, filteredLines);
+        //dumpDebugImage(image, calculatedBoundaries);
 
-        TrackBoundaries newTrackBoundaries = new TrackBoundaries(filteredLines);
+        TrackBoundaries newTrackBoundaries = new TrackBoundaries(calculatedBoundaries);
         return newTrackBoundaries;
     }
+
+    /**
+     * Input is all the scanlines of the image that contain at least one border
+     * Now we assume we're on the track, so the middle of the bottom scanline *IS* track
+     * From here we work our way up, find the piece of track in the line above between the previous two borders.
+     *
+     * @param image
+     * @param scanlines
+     * @return
+     */
+    private List<int[]> extractBoundaries(BufferedImage image, Map<Integer, List<Integer>> scanlines) {
+
+        double middleOfTrack = (image.getWidth() - 1) / 2;
+
+        List<int[]> boundaries = new ArrayList<>();
+        boolean foundActualBorders = false;
+
+        // Move from the bottom of the image up:
+        for(int line = image.getHeight() - 1; line >= WEBCAM_HORIZON; line--) {
+
+            if(scanlines.containsKey(line) || !foundActualBorders) {
+
+                List<Integer> linePoints = scanlines.getOrDefault(line, new ArrayList<>());
+
+                linePoints.add(0, 0);
+                linePoints.add(image.getWidth() - 1);
+
+                // Increase the points by TWO because we mark the start and end of boundary tape:
+                for(int point = 0; point < linePoints.size() - 1; point +=2) {
+                    int p1 = linePoints.get(point);
+                    int p2 = linePoints.get(point+1);
+                    // If this point is inside the middle of the track, register this as track:
+                    if(p1 <= middleOfTrack && p2 > middleOfTrack) {
+                        // (Slowly) adjust middle of track:
+                        middleOfTrack = ((middleOfTrack * 2) + ((p1 + p2) / 2)) / 3;
+                        boundaries.add(new int[] { line, p1, p2 });
+                        break;
+                    }
+                }
+                if(scanlines.containsKey(line)) {
+                    foundActualBorders = true;
+                }
+            }
+        }
+
+        if(!foundActualBorders) {
+            // Went throught the entire image without any clear boundaries?
+            // Don't return anything
+            boundaries.clear();
+        }
+        return boundaries;
+    }
+
 
     /**
      * DEBUG OPTION: Output an image with some debug information points
      * Easy method to tweak the actual webcam images on-scene.
      *
-     * @param scannedLines
+     * @param trackBoundaries
      * @return
      */
-    private void dumpDebugImage(BufferedImage image, List<int[]> scannedLines, List<int[]> filteredLines) {
+    static int cnt = 0;
+    private void dumpDebugImage(BufferedImage image, List<int[]> trackBoundaries) {
         BufferedImage tImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         Graphics2D g = (Graphics2D) tImage.getGraphics();
         g.drawImage(image, 0, 0, tImage.getWidth(), tImage.getHeight(), 0, 0, tImage.getWidth(), tImage.getHeight(), null);
-        for(int[] line:scannedLines) {
-            tImage.setRGB(line[1], line[0], Color.RED.getRGB());
-            tImage.setRGB(line[2], line[0], Color.RED.getRGB());
-        }
-        for(int[] line:filteredLines) {
-            tImage.setRGB(line[1], line[0], Color.BLUE.getRGB());
-            tImage.setRGB(line[2], line[0], Color.BLUE.getRGB());
+
+        //Change color if there is a break in the detected area
+        Color[] colors = new Color[] {Color.BLUE, Color.CYAN, Color.GREEN};
+        int colorPtr = 0;
+        int previousLineId = -1;
+        for(int[] line:trackBoundaries) {
+            g.setColor(colors[colorPtr]);
+            //clamp values (detected track can lay outside of the image because of predictions)
+            int lineId = line[0];
+            int left = Math.max(0, line[1]);
+            int right = Math.min(image.getWidth(), line[2]);
+            g.drawLine(left + 1, lineId, right - 1, lineId);
+            if(lineId != previousLineId-1) {
+                colorPtr = (colorPtr+1)%3;
+            }
+            previousLineId = lineId;
         }
 
         try {
-            ImageIO.write(tImage, "PNG", new File("output.png"));
+            ImageIO.write(tImage, "PNG", new File("output"+(cnt++)+".png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    /**
-     * With the fast line-by-line road detection algorithm there are a lot of outliers.
-     * Using a simple moving average we can remove most of the outliers quickly.
-     *
-     * @param scannedLines
-     * @return
-     */
-    private List<int[]> filterOutliers(List<int[]> scannedLines) {
-        List<int[]> filteredLines = new ArrayList<>();
-        for(int line = 0; line < scannedLines.size(); line++) {
-            // Take some values before and after our current line:
-            int startValue = line - (NOISE_POINTS_AVERAGE / 2);
-            int endValue = line + (NOISE_POINTS_AVERAGE / 2);
-
-            // Clamp to avoid AOOBExceptions:
-            if(startValue < 0) {
-                endValue -= startValue;
-                startValue = 0;
-            } else if (endValue > scannedLines.size()) {
-                startValue -= (endValue - scannedLines.size());
-                endValue = scannedLines.size();
-            }
-
-            // Calculate the average point of the lines before and after:
-            int[] avg = new int[2];
-            for(int cLine = startValue; cLine < endValue; cLine++) {
-                int[] cL = scannedLines.get(cLine);
-                avg[0] += cL[1];
-                avg[1] += cL[2];
-            }
-            avg[0] /= (endValue-startValue);
-            avg[1] /= (endValue-startValue);
-
-            // If this is not an outlier, include it in the output:
-            int noise = Math.abs(scannedLines.get(line)[1] - avg[0]) + Math.abs(scannedLines.get(line)[2] - avg[1]);
-            if(noise < NOISE_THRESHOLD) {
-                filteredLines.add(scannedLines.get(line));
-            }
-        }
-        return filteredLines;
-    }
-
 
     /**
      * Given x and y, and an offset, calculate the location in the array

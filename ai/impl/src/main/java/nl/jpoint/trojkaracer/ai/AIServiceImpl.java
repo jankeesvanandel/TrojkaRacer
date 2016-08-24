@@ -38,6 +38,7 @@ public class AIServiceImpl implements AIService {
         // Analyse the track/tape boundaries and return an average position/target
         // Because the camera is mounted on the car *our* position is always in the middle of the image.
         // So the line we should take is from the center of the image to the center of the track (as far away as possible?)
+        // Also, if there is no clear direction, maybe we should abort and stop?
         return 0.0;
     }
 
@@ -47,9 +48,14 @@ public class AIServiceImpl implements AIService {
             return 0.0;
         } else {
             // TODO:
-            // We should detect horizontal lines/finish area's?
+            // Right now the trackInfo is broken into pieces when we encounter a start/finish line
+            // This can be used for braking.
             // This is pretty hard to do though...
             // Combined with the track boundaries we might be able to detect the finish area and calculate the distance to it.
+            // But really we need to think about having podometry (so we know how much is travelled)
+            // This helps us in multiple ways:
+            // 1) For the drag race we can just pre-determine the distance and really race hard (cheating? meh)
+            // 2) For the circuit we need to know how far we've travelled to create a 'mental image' of the track
             return 0.0;
         }
 

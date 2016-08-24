@@ -2,7 +2,7 @@ package nl.jpoint.trojkaracer.processing;
 
 import java.awt.image.BufferedImage;
 
-public class WebcamImageReader implements ImageReader {
+public class WebcamReader implements ImageReader {
 
     @Override
     public BufferedImage fetchImage() {

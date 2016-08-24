@@ -67,6 +67,21 @@ public class ImageProcessorTest {
         Assert.assertEquals(255.0, calculateTrackAverage(), 20.0);
     }
 
+    @Test
+    public void testTrackBoundaryDetection4() {
+        // Try to detect boundaries:
+        fireAnalysisRunWithImage("road_test4.jpg");
+        Assert.assertEquals(300, calculateTrackAverage(), 20.0);
+    }
+
+    @Test
+    public void testTrackBoundaryDetectionNoTrack() {
+        // Try to detect boundaries:
+        fireAnalysisRunWithImage("road_test_clean.jpg");
+        TrackBoundaries boundaries = imageProcessor.getLatestTrackBoundaries();
+        Assert.assertTrue(boundaries.getScannedLines().isEmpty());
+    }
+
     private double calculateTrackAverage() {
         TrackBoundaries boundaries = imageProcessor.getLatestTrackBoundaries();
 
