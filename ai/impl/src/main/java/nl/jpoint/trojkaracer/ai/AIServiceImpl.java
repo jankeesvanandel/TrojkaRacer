@@ -1,12 +1,17 @@
 package nl.jpoint.trojkaracer.ai;
 
 import nl.jpoint.trojkaracer.processing.ProcessingService;
+import nl.jpoint.trojkaracer.processing.TrackBoundaries;
 import nl.jpoint.trojkaracer.processing.TrackInfo;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.IntStream;
 
 public class AIServiceImpl implements AIService {
 
+    private static final double THROTTLE_FACTOR = 40.0d;
+    private static final double MAX_THROTTLE = 1.0d;
     private ProcessingService processingService;
 
     private long lastProcessedTimestamp = -1;
@@ -25,39 +30,62 @@ public class AIServiceImpl implements AIService {
             // Process new trackinfo:
 
             // Maybe we should make the DesiredActions hold just the double values instead of these wrapper items?
+            final double[] steeringAndThrottle = calculateSteeringAndThrottle(trackInfo);
             desiredActions =
                     new DesiredActions(
-                        new SteeringAction(calculateSteeringAngle(trackInfo)),
-                        new ThrottleAction(calculateThrottle(trackInfo)));
+                        new SteeringAction(steeringAndThrottle[0]),
+                        new ThrottleAction(steeringAndThrottle[1]));
         }
         return desiredActions;
     }
 
-    private double calculateSteeringAngle(TrackInfo trackInfo) {
-        // TODO:
-        // Analyse the track/tape boundaries and return an average position/target
-        // Because the camera is mounted on the car *our* position is always in the middle of the image.
-        // So the line we should take is from the center of the image to the center of the track (as far away as possible?)
-        // Also, if there is no clear direction, maybe we should abort and stop?
-        return 0.0;
-    }
+    private double[] calculateSteeringAndThrottle(TrackInfo trackInfo) {
+        TrackBoundaries boundaries = trackInfo.getBoundaries();
+        List<int[]> scannedLines = boundaries.getScannedLines();
+        double nextX = 0, nextY = 0;
+        double currentX = 0, currentY = 0;
+        boolean firstVisibleTrackPart = true;
+        for (int[] scannedLine : scannedLines) {
+            if (scannedLine.length == 0) {
+                // No more data, abort.
+                break;
+            }
 
-    private double calculateThrottle(TrackInfo trackInfo) {
-        if(trackInfo.isStartSignRed()) {
-            // Red light, no driving! (We should steer though, that makes it easier while testing)
-            return 0.0;
-        } else {
-            // TODO:
-            // Right now the trackInfo is broken into pieces when we encounter a start/finish line
-            // This can be used for braking.
-            // This is pretty hard to do though...
-            // Combined with the track boundaries we might be able to detect the finish area and calculate the distance to it.
-            // But really we need to think about having podometry (so we know how much is travelled)
-            // This helps us in multiple ways:
-            // 1) For the drag race we can just pre-determine the distance and really race hard (cheating? meh)
-            // 2) For the circuit we need to know how far we've travelled to create a 'mental image' of the track
-            return 0.0;
+            float middle = calculateMiddle(scannedLine);
+            if (firstVisibleTrackPart) {
+                firstVisibleTrackPart = false;
+                currentX = middle;
+                currentY = nextY;
+            }
+
+            nextY++;
+            nextX = nextX + (middle - nextX) / nextY;
         }
 
+        double angle = getAngle(currentX, currentY, nextX, nextY);
+        double throttle = Math.min((nextY - currentY) / THROTTLE_FACTOR, MAX_THROTTLE);
+        return new double[] { angle, throttle };
     }
+
+    private float calculateMiddle(final int[] scannedLine) {
+        float middle;
+        if (scannedLine.length == 1) {
+            middle = scannedLine[0];
+        } else if (scannedLine.length == 2) {
+            middle = scannedLine[0] + scannedLine[1] / 2;
+        } else if (scannedLine.length == 3) {
+            middle = scannedLine[0] + scannedLine[1] + scannedLine[2] / 2;
+        } else {
+            middle = (float) IntStream.of(scannedLine).average().getAsDouble();
+        }
+        return middle;
+    }
+
+    /*
+     * Return the angle of the two given points, as a double between -1.0 and 1.0.
+     */
+    private double getAngle(double x1, double y1, double x2, double y2) {
+        return (Math.atan2(x2 - x1, y2 - y1) / Math.PI) * 2;
+    }
+
 }
