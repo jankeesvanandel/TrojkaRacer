@@ -18,6 +18,7 @@
       <module>ai</module>
       <module>pid</module>
       <module>deadmans_switch</module>
+      <module>runtime</module>
       <module>web</module>
     </modules>
 
