@@ -1,8 +1,5 @@
 package nl.jpoint.trojkaracer.pid;
 
-import nl.jpoint.trojkaracer.ai.AIService;
-
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -11,46 +8,31 @@ import javax.inject.Singleton;
 @Singleton
 public class TrojkaRacerPIDController implements PIDController {
 
-    private final AIService aiService;
+    private final PID steeringPid;
+    private final PID throttlePid;
 
-    private boolean running;
-
-
-    @Inject
-    public TrojkaRacerPIDController(final AIService aiService) {
-        this.aiService = aiService;
-        running = false;
+    public TrojkaRacerPIDController() {
+        this.steeringPid = new PID(6, 0.6, 1, -1.0, 1.0);
+        this.throttlePid = new PID(0, 0, 0, -1.0, 1.0);
     }
 
     @Override
-    public void initialize() {
-
+    public double calculateSteeringAndThrottle(double requestedSteering, boolean requestedThrottle) {
+        return this.steeringPid.calculate(requestedSteering, 0.0);
     }
 
-    @Override
-    public void start() {
-        initialize();
-        run();
-    }
+    public static void main(String[] args) throws InterruptedException {
+        PID steeringPid = new PID(0.5, 2.0, 0, -1.0, 1.0);
+        steeringPid.setDirection(PID.Direction.DIRECT);
+        steeringPid.setMode(PID.Mode.AUTOMATIC);
 
-    @Override
-    public void stop() {
+        double input = 0;
+        for (int i = 0; i < 100; i++) {
+            double calculated = steeringPid.calculate(input, 0.8);
+            System.out.println("input = " + input + ", output = " + calculated);
+            input = calculated;
+            Thread.sleep(50L);
 
-    }
-
-    @Override
-    public void kill() {
-        this.running = false;
-    }
-
-    private void run() {
-        // TODO: Waarom hebben we de logica van het loopen e.d. in de controllers?
-        // Kunnen we niet beter een losse module maken die bepaalt of dingen moeten loopen en de controllers met 'business logica' een methode geven die constant wordt aangeroepen?
-        // Op die manier scheiden we het loopen van de logica in de controller.
-        running = true;
-        while (running) {
         }
-        running = false;
     }
-
 }
