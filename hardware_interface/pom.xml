@@ -26,6 +26,14 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.squareup.dagger</groupId>
+            <artifactId>dagger-compiler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-core</artifactId>
+        </dependency>
     </dependencies>
     
 </project>
