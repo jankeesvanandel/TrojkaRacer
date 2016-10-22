@@ -4,17 +4,17 @@ const short THROTTLE_PIN_NR = 9;
 const short STEERING_PIN_NR = 6; 
 const short DEFAULT_DURATION_THROTTLE = 1500;
 const short DEFAULT_DURATION_STEERING = 1500;
-const long DEFAULT_SERIAL_COMMUNICATION_DATA_RATE = 115200;
+const long DEFAULT_SERIAL_COMMUNICATION_DATA_RATE = 57600;
 
 Servo throttleServo;
 Servo steeringServo;
 
 void setup() {
-  initializeServos();
-  initializeSerial();
+  setupServos();
+  setupSerial();
 }
 
-void initializeServos() {
+void setupServos() {
   // attach servo instances to PWM pins
   throttleServo.attach(THROTTLE_PIN_NR);
   steeringServo.attach(STEERING_PIN_NR);
@@ -27,7 +27,7 @@ void initializeServos() {
   steeringServo.writeMicroseconds(DEFAULT_DURATION_STEERING);
 }
 
-void initializeSerial() {
+void setupSerial() {
   Serial.begin(DEFAULT_SERIAL_COMMUNICATION_DATA_RATE);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
@@ -54,26 +54,10 @@ void executeCommand(String cmd, int value) {
     updateServo(throttleServo, value);
   } else if (cmd == "STE") {
     updateServo(steeringServo, value);
-  } else if (cmd == "XXX") {
-    shutdown();
   }
 }
 
 void updateServo(Servo servo, int value) {
   servo.writeMicroseconds(value);
-  Serial.println(String(steeringServo.read()) + ";" + String(throttleServo.read()));
-}
-
-void shutdown() {
-  Serial.println("SHUTTING DOWN...");
-
-  throttleServo.writeMicroseconds(DEFAULT_DURATION_THROTTLE);
-  steeringServo.writeMicroseconds(DEFAULT_DURATION_STEERING);
-
-  delay(100);
-  
-  steeringServo.detach();
-  throttleServo.detach();
-  Serial.end();
 }
 

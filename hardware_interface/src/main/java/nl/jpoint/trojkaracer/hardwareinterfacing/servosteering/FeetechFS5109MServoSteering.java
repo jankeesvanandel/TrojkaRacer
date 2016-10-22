@@ -10,6 +10,6 @@ import com.pi4j.io.gpio.GpioController;
 public class FeetechFS5109MServoSteering extends AbstractServoSteering implements ServoSteering {
 
     public FeetechFS5109MServoSteering(final GpioController gpioController) {
-        super(gpioController, 500, 2500);
+        super(gpioController, 1000, 2000);
     }
 }

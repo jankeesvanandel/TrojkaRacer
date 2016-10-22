@@ -38,6 +38,13 @@ abstract class AbstractServoSteering implements ServoSteering {
 
     AbstractServoSteering(final GpioController gpioController,
                           final int lowPulseWidth,
+                          final int highPulseWidth,
+                          final Pin pin) {
+        this(gpioController, lowPulseWidth, (highPulseWidth + lowPulseWidth) / 2, highPulseWidth, DEFAULT_TOTAL_PULSE_WIDTH, DEFAULT_RANGE, pin);
+    }
+
+    AbstractServoSteering(final GpioController gpioController,
+                          final int lowPulseWidth,
                           final int centerPulseWidth,
                           final int highPulseWidth,
                           final int totalPulseWidth) {

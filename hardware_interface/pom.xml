@@ -30,10 +30,20 @@
             <groupId>com.squareup.dagger</groupId>
             <artifactId>dagger-compiler</artifactId>
         </dependency>
+        
         <dependency>
             <groupId>com.pi4j</groupId>
             <artifactId>pi4j-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-device</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.scream3r</groupId>
+            <artifactId>jssc</artifactId>
+        </dependency>
+
     </dependencies>
     
 </project>
