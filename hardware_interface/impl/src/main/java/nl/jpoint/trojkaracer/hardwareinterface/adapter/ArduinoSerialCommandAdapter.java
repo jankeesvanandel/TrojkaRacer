@@ -4,6 +4,9 @@ import nl.jpoint.trojkaracer.hardwareinterface.HardwareInterfaceException;
 import nl.jpoint.trojkaracer.hardwareinterface.PWMPulseOutsideLimitsException;
 import nl.jpoint.trojkaracer.hardwareinterface.Stoppable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
 
 import jssc.SerialPort;
@@ -17,6 +20,8 @@ import jssc.SerialPortException;
  * </p>
  */
 public class ArduinoSerialCommandAdapter implements Stoppable {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArduinoSerialCommandAdapter.class);
 
     private static final String SERIAL_COMMAND_BREAK = "\n";
     private static final String SPEED_COMPONENT_NAME = "SpeedController";
@@ -39,6 +44,8 @@ public class ArduinoSerialCommandAdapter implements Stoppable {
         this.serialPort = serialPort;
         this.speedPWMValues = speedPWMValues;
         this.directionPWMValues = directionPWMValues;
+
+        LOGGER.info("Created {} instance with serial port set to {}", this.getClass().getSimpleName(), serialPort.getPortName());
     }
 
     /**
@@ -105,13 +112,15 @@ public class ArduinoSerialCommandAdapter implements Stoppable {
      * @return a {@link CommandResult} representing the result returned from the Arduino.
      */
     private CommandResult sendCommand(final Command cmd, final int value) {
+        final String msg = String.format("%s%s", cmd, value);
+        LOGGER.debug("Sending message '{}' to the Arduino", msg);
         try {
-            final String msg = String.format("%s%s%s", cmd, value, SERIAL_COMMAND_BREAK);
-            serialPort.writeString(msg);
+            serialPort.writeString(msg + SERIAL_COMMAND_BREAK);
 
             // TODO: Retrieve the old speed and direction and return these values
-        } catch (final SerialPortException e) {
-            throw new HardwareInterfaceException(e);
+        } catch (final SerialPortException spe) {
+            LOGGER.error("Error during sending of command '{}' to the Arduino over the serial port.", msg, spe);
+            throw new HardwareInterfaceException(spe);
         }
         return new CommandResult("0;0");
     }

@@ -3,6 +3,9 @@ package nl.jpoint.trojkaracer.hardwareinterface;
 import nl.jpoint.trojkaracer.hardwareinterface.adapter.ArduinoSerialCommandAdapter;
 import nl.jpoint.trojkaracer.hardwareinterface.adapter.PWMValues;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -17,6 +20,8 @@ import javax.inject.Singleton;
 @Singleton
 public class ArduinoSerialPercentageController implements SpeedController<Integer>, DirectionController<Integer>, Stoppable {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArduinoSerialPercentageController.class);
+
     private final ArduinoSerialCommandAdapter arduinoSerialCommandAdapter;
     private final PWMValues speedPWMValues;
     private final PWMValues directionPWMValues;
@@ -28,6 +33,8 @@ public class ArduinoSerialPercentageController implements SpeedController<Intege
         this.arduinoSerialCommandAdapter = arduinoSerialCommandAdapter;
         this.speedPWMValues = speedPWMValues;
         this.directionPWMValues = directionPWMValues;
+
+        LOGGER.info("Created {} instance", this.getClass().getSimpleName());
     }
 
     @Override
