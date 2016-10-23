@@ -89,7 +89,7 @@ public class PWMValues {
         if (percentage >= 0) {
             pulseWidth = neutralPulseWidth + calculatePercentage(percentage, positivePulseWidthRange);
         } else {
-            pulseWidth = neutralPulseWidth - calculatePercentage(percentage, negativePulseWidthRange);
+            pulseWidth = neutralPulseWidth + calculatePercentage(percentage, negativePulseWidthRange);
         }
         return pulseWidth;
     }
@@ -104,16 +104,16 @@ public class PWMValues {
      * @return a percentage (between -100 and +100).
      */
     public int getPercentageForPulseWidth(final int pulseWidth) {
-        if (pulseWidth > positivePulseWidthRange || pulseWidth < negativePulseWidthRange) {
-            throw new IllegalArgumentException(String.format("Pulse width should be between %s and %s (was %s).", negativePulseWidthRange,
-                    positivePulseWidthRange, pulseWidth));
+        if (pulseWidth > maximumPulseWidth || pulseWidth < minimumPulseWidth) {
+            throw new IllegalArgumentException(String.format("Pulse width should be between %s and %s (was %s).", minimumPulseWidth,
+                    maximumPulseWidth, pulseWidth));
         }
 
         final int percentage;
         if (pulseWidth >= neutralPulseWidth) {
             percentage = (PERCENTAGE_DIVIDER * (pulseWidth - neutralPulseWidth)) / positivePulseWidthRange;
         } else {
-            percentage = (PERCENTAGE_DIVIDER * (neutralPulseWidth - pulseWidth)) / negativePulseWidthRange;
+            percentage = (-1 * PERCENTAGE_DIVIDER * (neutralPulseWidth - pulseWidth)) / negativePulseWidthRange;
         }
         return percentage;
     }
