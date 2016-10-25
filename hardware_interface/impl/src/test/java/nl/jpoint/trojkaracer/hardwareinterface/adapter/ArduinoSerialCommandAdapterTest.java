@@ -35,7 +35,8 @@ public class ArduinoSerialCommandAdapterTest {
     private ArduinoSerialCommandAdapter arduinoSerialCommandAdapter;
 
     @Before
-    public void init() {
+    public void init() throws SerialPortException {
+        when(serialPort.readString()).thenReturn("\n");
         arduinoSerialCommandAdapter = new ArduinoSerialCommandAdapter(serialPort, SPEED_PWM_VALUES, DIRECTION_PWM_VALUES);
     }
 
@@ -73,8 +74,9 @@ public class ArduinoSerialCommandAdapterTest {
         arduinoSerialCommandAdapter.stop();
 
         final ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
-        verify(serialPort, times(2)).writeString(argumentCaptor.capture());
+        verify(serialPort, times(3)).writeString(argumentCaptor.capture());
 
+        assertTrue("Did not receive the initialization command", argumentCaptor.getAllValues().contains("INI10\n"));
         assertTrue("Did not receive the command to set the speed to 0/neutral", argumentCaptor.getAllValues().contains("THR1000\n"));
         assertTrue("Did not receive the command to set the direction to 0/neutral", argumentCaptor.getAllValues().contains("STE110\n"));
     }

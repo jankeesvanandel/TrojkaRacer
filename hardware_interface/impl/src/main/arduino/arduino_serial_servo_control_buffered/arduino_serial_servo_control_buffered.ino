@@ -73,8 +73,16 @@ int checkAndUpdateValue(Servo servo, int currentValue, int targetValue) {
 void serialEvent() {
   while (Serial.available()) {
     String msg = Serial.readStringUntil('\n');
+    Serial.read();
+
     String cmd = msg.substring(0, 3);
-    int value = msg.substring(3).toInt();
+
+    int value;
+    if (msg.length() > 3) {
+      value = msg.substring(3).toInt();
+    } else {
+      value = 0;
+    }
 
     executeCommand(cmd, value);
   }
@@ -83,8 +91,12 @@ void serialEvent() {
 void executeCommand(String cmd, int value) {
   if (cmd == "THR") {
     throttleTargetValue = value;
+    returnCurrentState();
   } else if (cmd == "STE") {
     steeringTargetValue = value;
+    returnCurrentState();
+  } else if (cmd == "GET") {
+    returnCurrentState();
   } else if (cmd == "INI") {
     valueStep = value;
   }
@@ -94,3 +106,11 @@ void updateServo(Servo servo, int value) {
   servo.writeMicroseconds(value);
 }
 
+void returnCurrentState() {
+    String currentState = "";
+    currentState.concat(throttleValue);
+    currentState.concat(";");
+    currentState.concat(steeringValue);
+    Serial.println(currentState);
+    Serial.flush();
+}

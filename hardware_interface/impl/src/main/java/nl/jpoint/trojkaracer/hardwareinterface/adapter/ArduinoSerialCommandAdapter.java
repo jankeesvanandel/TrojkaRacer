@@ -40,11 +40,13 @@ public class ArduinoSerialCommandAdapter implements Stoppable {
      * @param directionPWMValues the PWM values, containing the min, max and neutral pulse widths for the Direction Servo.
      */
     @Inject
-    public ArduinoSerialCommandAdapter(final SerialPort serialPort, final PWMValues speedPWMValues, final PWMValues directionPWMValues) {
+    public ArduinoSerialCommandAdapter(final SerialPort serialPort, final PWMValues speedPWMValues, final PWMValues directionPWMValues)
+            throws SerialPortException {
         this.serialPort = serialPort;
         this.speedPWMValues = speedPWMValues;
         this.directionPWMValues = directionPWMValues;
 
+        sendCommand(Command.INITIALIZATION, 10);
         LOGGER.info("Created {} instance with serial port set to {}", this.getClass().getSimpleName(), serialPort.getPortName());
     }
 
@@ -65,7 +67,8 @@ public class ArduinoSerialCommandAdapter implements Stoppable {
      * @return the current speed.
      */
     public int getSpeed() {
-        return 0;
+        final CommandResult result = sendCommand(Command.GET_INFO, 0);
+        return result.getSpeed();
     }
 
     /**
@@ -85,11 +88,12 @@ public class ArduinoSerialCommandAdapter implements Stoppable {
      * @return the current direction.
      */
     public int getDirection() {
-        return 0;
+        final CommandResult result = sendCommand(Command.GET_INFO, 0);
+        return result.getDirection();
     }
 
     @Override
-    public void stop() {
+    public void stop()  {
         setSpeed(speedPWMValues.getNeutralPulseWidth());
         setDirection(directionPWMValues.getNeutralPulseWidth());
     }
@@ -114,15 +118,41 @@ public class ArduinoSerialCommandAdapter implements Stoppable {
     private CommandResult sendCommand(final Command cmd, final int value) {
         final String msg = String.format("%s%s", cmd, value);
         LOGGER.debug("Sending message '{}' to the Arduino", msg);
+
+        final CommandResult commandResult;
         try {
             serialPort.writeString(msg + SERIAL_COMMAND_BREAK);
 
-            // TODO: Retrieve the old speed and direction and return these values
+            final String commandResultMsg = readTillReceived();
+            commandResult = new CommandResult(commandResultMsg.trim());
         } catch (final SerialPortException spe) {
-            LOGGER.error("Error during sending of command '{}' to the Arduino over the serial port.", msg, spe);
+            LOGGER.error("Error during sending of command '{}' to the Arduino over the serial port (or during reading of its result).", msg, spe);
             throw new HardwareInterfaceException(spe);
         }
-        return new CommandResult("0;0");
+        return commandResult;
+    }
+
+    private String readTillReceived() throws SerialPortException {
+        final StringBuilder result = new StringBuilder();
+
+        // Procedure to wait till init message is fully retrieved.
+        try {
+            String messageReceived = null;
+            while (messageReceived == null || !messageReceived.endsWith(SERIAL_COMMAND_BREAK)) {
+                Thread.sleep(10);
+                messageReceived = serialPort.readString();
+                if (messageReceived != null) {
+                    result.append(messageReceived);
+                }
+            }
+        } catch (final InterruptedException ie) {
+            LOGGER.error("Caught interruption when reading serial port. Resetting interrupt on thread (as exception is not rethrown).");
+            // Restore the interrupted status
+            Thread.currentThread().interrupt();
+        }
+
+        LOGGER.debug("Read from serial port: {}", result.toString());
+        return result.toString();
     }
 
     /**
@@ -130,7 +160,9 @@ public class ArduinoSerialCommandAdapter implements Stoppable {
      */
     private enum Command {
         SPEED("THR"),
-        DIRECTION("STE");
+        DIRECTION("STE"),
+        INITIALIZATION("INI"),
+        GET_INFO("GET");
 
         private final String cmd;
 

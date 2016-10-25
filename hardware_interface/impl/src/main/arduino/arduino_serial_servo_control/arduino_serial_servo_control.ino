@@ -12,6 +12,9 @@ Servo steeringServo;
 void setup() {
   setupServos();
   setupSerial();
+
+  throttleValue = DEFAULT_DURATION_THROTTLE;
+  steeringValue = DEFAULT_DURATION_STEERING;
 }
 
 void setupServos() {
@@ -42,8 +45,16 @@ void loop() {
 void serialEvent() {
   while (Serial.available()) {
     String msg = Serial.readStringUntil('\n');
+    Serial.read();
+
     String cmd = msg.substring(0, 3);
-    int value = msg.substring(3).toInt();
+
+    int value;
+    if (msg.length() > 3) {
+      value = msg.substring(3).toInt();
+    } else {
+      value = 0;
+    }
 
     executeCommand(cmd, value);
   }
@@ -52,12 +63,27 @@ void serialEvent() {
 void executeCommand(String cmd, int value) {
   if (cmd == "THR") {
     updateServo(throttleServo, value);
+    returnCurrentState();
   } else if (cmd == "STE") {
     updateServo(steeringServo, value);
+    returnCurrentState();
+  } else if (cmd == "GET") {
+    returnCurrentState();
+  } else if (cmd == "INI") {
+    valueStep = value;
   }
 }
 
 void updateServo(Servo servo, int value) {
   servo.writeMicroseconds(value);
+}
+
+void returnCurrentState() {
+    String currentState = "";
+    currentState.concat(throttleServo.read());
+    currentState.concat(";");
+    currentState.concat(steeringServo.read());
+    Serial.println(currentState);
+    Serial.flush();
 }
 
