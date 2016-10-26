@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import jssc.SerialPort;
 import jssc.SerialPortException;
@@ -40,8 +41,9 @@ public class ArduinoSerialCommandAdapter implements Stoppable {
      * @param directionPWMValues the PWM values, containing the min, max and neutral pulse widths for the Direction Servo.
      */
     @Inject
-    public ArduinoSerialCommandAdapter(final SerialPort serialPort, final PWMValues speedPWMValues, final PWMValues directionPWMValues)
-            throws SerialPortException {
+    public ArduinoSerialCommandAdapter(final SerialPort serialPort,
+                                       @Named("speed_pwm") final PWMValues speedPWMValues,
+                                       @Named("direction_pwm") final PWMValues directionPWMValues) {
         this.serialPort = serialPort;
         this.speedPWMValues = speedPWMValues;
         this.directionPWMValues = directionPWMValues;
