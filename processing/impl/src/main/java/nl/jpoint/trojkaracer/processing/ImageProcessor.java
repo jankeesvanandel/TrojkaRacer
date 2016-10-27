@@ -1,5 +1,8 @@
 package nl.jpoint.trojkaracer.processing;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import java.awt.*;
@@ -37,6 +40,7 @@ public class ImageProcessor implements Runnable {
 
     // Looping in pixel arrays the step is 3 (B/G/R)
     private static final int PIXEL_STEP = 3;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessor.class);
 
     private ImageReader imageReader;
 
@@ -74,13 +78,19 @@ public class ImageProcessor implements Runnable {
      * TODO: How are we bootstrapping all the code?
      */
     public void run() {
-
+        LOGGER.debug("Fetching new image");
         // Fetch image from webcam:
         BufferedImage image = imageReader.fetchImage();
+
+        if (image == null) {
+            LOGGER.warn("Failed to fetch image from the imageReader; not analyzing any image.");
+            return;
+        }
 
         // Analyze image:
 
         byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+        LOGGER.debug("Pixels size: " + pixels.length);
         if(trafficLightLocation == null) {
             // We're starting, no traffic light has been found yet:
             trafficLightLocation = findRedTrafficLightLocation(image, pixels);

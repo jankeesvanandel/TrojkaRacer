@@ -37,12 +37,12 @@ public class TrojkaRacerMainLoop implements Runnable {
 
     @Override
     public void run() {
+        LOGGER.debug("Retrieving new set points and applying them to the car controllers");
         final DesiredActions desiredActions = aiService.getDesiredActions();
         final Double steeringSetPoint = desiredActions.getSteeringAction().getSteeringPosition() * PERCENTAGE;
         final Double throttleSetPoint = desiredActions.getThrottleAction().getThrottleAmount() * PERCENTAGE;
 
-        LOGGER.debug("TrojkaRacer main loop sets a new required speed of {} and a required direction of {}",
-                throttleSetPoint.intValue(), steeringSetPoint.intValue());
+        LOGGER.debug("Setting a new required speed of {} and a required direction of {}", throttleSetPoint.intValue(), steeringSetPoint.intValue());
 
         directionController.setDirection(steeringSetPoint.intValue());
         speedController.setSpeed(throttleSetPoint.intValue());
