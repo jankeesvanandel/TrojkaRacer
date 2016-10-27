@@ -30,7 +30,11 @@
             <artifactId>trojkaracer-ai-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>nl.jpoint.trojkaracer</groupId>
+            <artifactId>trojkaracer-hardware-interface-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
-    
     
 </project>

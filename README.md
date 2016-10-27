@@ -3,12 +3,13 @@
 ## Project team
 * Roy Braam (dead man's switch)
 * Roy van Rijn (car electronics, image processing/preparation)
-* Tim Blommerde (PID controller)
+* Tim Blommerde (car electronics, hardware interface, runner, PID controller)
 * Jan-Kees van Andel (AI)
 
 ## Hardware
 * Raspberry Pi
 * Raspberry Pi camera module
+* Arduino (for PWM signals and possibly PID controllers)
 * Dead Man's switch with electronic relays right on the engine power supply.
 
 ## Important guidelines
@@ -49,3 +50,8 @@ Reads the desired speed/direction from the AI module and translates it into effi
 
 ### Web module
 With the web module we should be able to configure the modules, start/stop it, etc.
+
+### Hardware interface ###
+Module for interfacing between the Raspberry Pi and the hardware of the race car (like the motor and the steering servo). The modules offers
+an API for controlling the speed and the direction. The implementation of this interface does the actual work and communicates with the hardware
+(through the Arduino).

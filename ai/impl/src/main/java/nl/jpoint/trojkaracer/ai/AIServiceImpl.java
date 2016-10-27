@@ -5,9 +5,12 @@ import nl.jpoint.trojkaracer.processing.TrackBoundaries;
 import nl.jpoint.trojkaracer.processing.TrackInfo;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import java.util.List;
 import java.util.stream.IntStream;
 
+@Singleton
 public class AIServiceImpl implements AIService {
 
     private static final double THROTTLE_FACTOR = 40.0d;
