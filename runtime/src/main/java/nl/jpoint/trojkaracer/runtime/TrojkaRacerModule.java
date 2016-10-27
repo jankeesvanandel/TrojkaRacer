@@ -30,9 +30,10 @@ public class TrojkaRacerModule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrojkaRacerModule.class);
     private static final String DEFAULT_IMAGE_STORING_DIRECTORY = "/home/pi/Pictures";
+    private static final boolean STORE_IMAGES = true;
     private static final int IMAGE_WIDTH = 500;
     private static final int IMAGE_HEIGHT = 500;
-    private static final int BRIGHTNESS = 75;
+    private static final int BRIGHTNESS = 50;
 
     @Provides
     RPiCamera provideRPICamera() {
@@ -50,7 +51,7 @@ public class TrojkaRacerModule {
 
     @Provides
     ImageReader provideImageReader(final RPiCamera rPiCamera) {
-        return new WebcamReader(rPiCamera);
+        return new WebcamReader(rPiCamera, STORE_IMAGES);
     }
 
     @Provides
