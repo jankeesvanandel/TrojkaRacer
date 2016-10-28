@@ -39,6 +39,7 @@
         <dependency>
             <groupId>com.hopding</groupId>
             <artifactId>jrpicam</artifactId>
+            <systemPath>${project.basedir}/../../libs/JRPiCam-v1.0.1.jar</systemPath>
         </dependency>
 
         <dependency>
