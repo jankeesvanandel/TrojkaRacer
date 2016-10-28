@@ -19,7 +19,7 @@ public class AIServiceImpl implements AIService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AIServiceImpl.class);
 
     private static final double THROTTLE_FACTOR = 40.0d;
-    private static final double MAX_THROTTLE = 1.0d;
+    private static final double MAX_THROTTLE = 0.2d;
     private ProcessingService processingService;
 
     private long lastProcessedTimestamp = -1;
