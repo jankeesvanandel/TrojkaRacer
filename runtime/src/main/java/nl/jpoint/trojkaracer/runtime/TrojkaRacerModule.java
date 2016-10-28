@@ -6,20 +6,25 @@ import com.hopding.jrpicam.enums.DRC;
 import com.hopding.jrpicam.enums.Encoding;
 import com.hopding.jrpicam.exceptions.FailedToRunRaspistillException;
 
+import nl.jpoint.trojkaracer.DeadmanSwitch;
 import nl.jpoint.trojkaracer.ai.AIService;
 import nl.jpoint.trojkaracer.ai.AIServiceImpl;
 import nl.jpoint.trojkaracer.ai.HardWiredAIService;
 import nl.jpoint.trojkaracer.hardwareinterface.ArduinoHardwareControllerModule;
+import nl.jpoint.trojkaracer.hardwareinterface.DirectionController;
+import nl.jpoint.trojkaracer.hardwareinterface.SpeedController;
+import nl.jpoint.trojkaracer.pid.Killable;
 import nl.jpoint.trojkaracer.processing.ImageProcessor;
 import nl.jpoint.trojkaracer.processing.ImageReader;
 import nl.jpoint.trojkaracer.processing.ProcessingService;
 import nl.jpoint.trojkaracer.processing.ProcessingServiceImpl;
 import nl.jpoint.trojkaracer.processing.WebcamReader;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Named;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -85,6 +90,34 @@ public class TrojkaRacerModule {
     AIService provideAIService(final ProcessingService processingService) {
 //        return new HardWiredAIService();
         return new AIServiceImpl(processingService);
+    }
+
+    @Provides
+    DeadmanSwitch provideDeadmanSwitch(final Killable killable, final InetAddress address){
+        return new DeadmanSwitch(killable, address);
+    }
+
+    @Provides
+    Killable provideKillable(final AIService aiService,
+                             final SpeedController<Integer> speedController,
+                             final DirectionController<Integer> directionController){
+        return new TrojkaRacerMainLoop(aiService, speedController, directionController);
+    }
+
+    @Provides
+    InetAddress provideInetAdress(@Named("deadmanswitch.host") final String deadmanHost){
+        try {
+            return InetAddress.getByName(deadmanHost);
+        } catch (UnknownHostException e) {
+            LOGGER.error("Error finding host for deadman switch", e);
+        }
+        return null;
+    }
+
+    @Provides
+    @Named("deadmanswitch.host")
+    String provideDeadmanSwitchHost(){
+        return "127.0.0.1";
     }
 
     @Provides

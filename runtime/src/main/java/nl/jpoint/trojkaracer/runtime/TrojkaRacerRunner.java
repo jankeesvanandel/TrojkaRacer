@@ -1,22 +1,20 @@
 package nl.jpoint.trojkaracer.runtime;
 
+import dagger.ObjectGraph;
+import nl.jpoint.trojkaracer.DeadmanSwitch;
 import nl.jpoint.trojkaracer.processing.ImageProcessor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
-import dagger.ObjectGraph;
-
 /**
  * Main Trojka Racer application that initializes all components, and triggers/starts all loops.
  */
-public class TrojkaRacerRunner {
+public class TrojkaRacerRunner{
 
     private static final int MILLIS = 1000;
     private static final int NR_OF_SCANS_PER_SECOND = 10;
@@ -27,15 +25,17 @@ public class TrojkaRacerRunner {
     private final TrojkaRacerMainLoop trojkaRacerMainLoop;
     private final ImageProcessor imageProcessor;
     private final ScheduledExecutorService scheduledExecutorService;
-
+    private final DeadmanSwitch deadmanSwitch;
 
     @Inject
     TrojkaRacerRunner(final TrojkaRacerMainLoop trojkaRacerMainLoop,
                       final ImageProcessor imageProcessor,
-                      final ScheduledExecutorService scheduledExecutorService) {
+                      final ScheduledExecutorService scheduledExecutorService,
+                      final DeadmanSwitch deadmanSwitch) {
         this.trojkaRacerMainLoop = trojkaRacerMainLoop;
         this.imageProcessor = imageProcessor;
         this.scheduledExecutorService = scheduledExecutorService;
+        this.deadmanSwitch = deadmanSwitch;
     }
 
     /**
@@ -58,6 +58,9 @@ public class TrojkaRacerRunner {
                     imageProcessor, EXECUTOR_DELAY_IN_MILLIS, (long) MILLIS / NR_OF_SCANS_PER_SECOND, TimeUnit.MILLISECONDS);
             final ScheduledFuture scheduledFutureMainLoop = scheduledExecutorService.scheduleAtFixedRate(
                     trojkaRacerMainLoop, EXECUTOR_DELAY_IN_MILLIS, (long) MILLIS / NR_OF_MAIN_LOOPS_PER_SECOND, TimeUnit.MILLISECONDS);
+
+            Thread deadmanSwitchThread = new Thread(deadmanSwitch);
+            deadmanSwitchThread.start();
 
             while (!scheduledFutureImageProcessor.isCancelled() && !scheduledFutureMainLoop.isCancelled())  {
                 Thread.sleep(10);

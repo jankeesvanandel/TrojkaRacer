@@ -36,6 +36,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>nl.jpoint.trojkaracer</groupId>
+            <artifactId>trojkaracer-deadmans-switch</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.hopding</groupId>
             <artifactId>jrpicam</artifactId>
             <systemPath>${project.basedir}/../libs/JRPiCam-v1.0.1.jar</systemPath>
