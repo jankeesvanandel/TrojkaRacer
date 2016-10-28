@@ -88,6 +88,8 @@
                 <groupId>com.hopding</groupId>
                 <artifactId>jrpicam</artifactId>
                 <version>1.0.1</version>
+                <scope>system</scope>
+                <systemPath>${project.basedir}/libs/JRPiCam-v1.0.1.jar</systemPath>
             </dependency>
             <dependency>
                 <groupId>org.scream3r</groupId>

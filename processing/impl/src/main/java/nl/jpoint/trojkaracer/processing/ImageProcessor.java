@@ -26,16 +26,17 @@ public class ImageProcessor implements Runnable {
     // Amount of consecutive pixels to make up a border-tape:
     private static final int TAPE_WIDTH_THRESHOLD = 4;
     // Mean sqrt color error between TAPE_COLOR and camera
-    private static final double TAPE_PIXEL_ERROR_THRESHOLD = 80;
+    private static final double TAPE_PIXEL_ERROR_THRESHOLD = 40;
 
     // Color of the boundaries tape (in BGR):
-    private static final int[] TAPE_COLOR = new int[] {20 ,20, 20};
+    private static final int[] TAPE_COLOR = new int[] {150 ,145, 145};
     // Color that kind of matches the red light (in BGR):
     private static final int[] RED_LIGHT_COLOR = new int[] {10 ,10, 155};
     // Color that matches the green light (in BGR):
     private static final int[] GREEN_LIGHT_COLOR = new int[] {67 ,143, 74};
     // Horizon of the (flat) road, don't look above this line:
-    private static final int WEBCAM_HORIZON = 120;
+    private static final int WEBCAM_HORIZON = 235;
+    private static final int WEBCAM_BOTTOM_OFFSET = 140;
     // ----------------------------------------------------------------
 
     // Looping in pixel arrays the step is 3 (B/G/R)
@@ -199,7 +200,7 @@ public class ImageProcessor implements Runnable {
         Map<Integer, List<Integer>> scanlines = new HashMap<>();
 
         // For each row in the image, starting at the horizon (property setting)
-        for(int y = WEBCAM_HORIZON; y < image.getHeight(); y++) {
+        for(int y = WEBCAM_HORIZON; y < image.getHeight() - WEBCAM_BOTTOM_OFFSET; y++) {
 
             List<Integer> borders = new ArrayList<>();
 
@@ -235,7 +236,7 @@ public class ImageProcessor implements Runnable {
 
         List<int[]> calculatedBoundaries = extractBoundaries(image, scanlines);
 
-        //dumpDebugImage(image, calculatedBoundaries);
+        dumpDebugImage(image, calculatedBoundaries);
 
         TrackBoundaries newTrackBoundaries = new TrackBoundaries(calculatedBoundaries);
         return newTrackBoundaries;
@@ -258,7 +259,7 @@ public class ImageProcessor implements Runnable {
         boolean foundActualBorders = false;
 
         // Move from the bottom of the image up:
-        for(int line = image.getHeight() - 1; line >= WEBCAM_HORIZON; line--) {
+        for(int line = image.getHeight() - WEBCAM_BOTTOM_OFFSET - 1; line >= WEBCAM_HORIZON; line--) {
 
             if(scanlines.containsKey(line) || !foundActualBorders) {
 

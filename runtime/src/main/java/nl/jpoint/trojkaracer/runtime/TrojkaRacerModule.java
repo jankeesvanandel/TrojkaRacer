@@ -1,6 +1,9 @@
 package nl.jpoint.trojkaracer.runtime;
 
 import com.hopding.jrpicam.RPiCamera;
+import com.hopding.jrpicam.enums.AWB;
+import com.hopding.jrpicam.enums.DRC;
+import com.hopding.jrpicam.enums.Encoding;
 import com.hopding.jrpicam.exceptions.FailedToRunRaspistillException;
 
 import nl.jpoint.trojkaracer.ai.AIService;
@@ -31,19 +34,21 @@ public class TrojkaRacerModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrojkaRacerModule.class);
     private static final String DEFAULT_IMAGE_STORING_DIRECTORY = "/home/pi/Pictures";
     private static final boolean STORE_IMAGES = false;
-    private static final int IMAGE_WIDTH = 500;
-    private static final int IMAGE_HEIGHT = 500;
+    private static final int IMAGE_WIDTH = 640;
+    private static final int IMAGE_HEIGHT = 480;
     private static final int BRIGHTNESS = 50;
 
     @Provides
     RPiCamera provideRPICamera() {
         try {
             final RPiCamera rPiCamera = new RPiCamera(DEFAULT_IMAGE_STORING_DIRECTORY);
+            rPiCamera.setToDefaults();
             rPiCamera.setWidth(IMAGE_WIDTH);
             rPiCamera.setHeight(IMAGE_HEIGHT);
             rPiCamera.setBrightness(BRIGHTNESS);
             rPiCamera.setFullPreviewOff();
-//            rPiCamera.setTimeout(1);
+            rPiCamera.setDRC(DRC.OFF);
+            rPiCamera.setAWB(AWB.OFF);
             return rPiCamera;
         } catch (final FailedToRunRaspistillException e) {
             LOGGER.error("Failed to create the camera instance", e);

@@ -29,11 +29,13 @@ public class WebcamReader implements ImageReader {
     public BufferedImage fetchImage() {
         try {
             final BufferedImage bufferedImage;
+            long time = System.currentTimeMillis();
             if (pictureStoringEnabled) {
                 bufferedImage = ImageIO.read(rPiCamera.takeStill(String.format("image-%1$tY%1$tm%1$td-%1$tH:%1$tM:%1$tS.%1$tL.jpg", new Date())));
             } else {
                 bufferedImage = rPiCamera.takeBufferedStill();
             }
+            LOGGER.debug("------ Took picture in {} ms", System.currentTimeMillis() - time);
             return bufferedImage;
         } catch (final IOException | InterruptedException e) {
             LOGGER.error("Failed to fetch the next image.", e);
