@@ -35,14 +35,14 @@ public class ImageProcessorTest {
     @Test
     public void testRaceStartDetection() {
         // Start with a red light:
-        fireAnalysisRunWithImage("trafficlight_red.jpg");
+        fireAnalysisRunWithImage("lichtaan.jpg");
 
         // Fire an image with a different red light (no start yet):
-        fireAnalysisRunWithImage("trafficlight_red_diff.jpg");
+        fireAnalysisRunWithImage("lichtaan.jpg");
         Assert.assertTrue(imageProcessor.isWaitingForGreenLight());
 
         // Fire an image with a green light, start the race:
-        fireAnalysisRunWithImage("trafficlight_green.jpg");
+        fireAnalysisRunWithImage("lichtuit.jpg");
         Assert.assertFalse(imageProcessor.isWaitingForGreenLight());
     }
 

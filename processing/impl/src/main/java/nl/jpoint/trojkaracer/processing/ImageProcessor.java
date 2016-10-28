@@ -21,7 +21,7 @@ public class ImageProcessor implements Runnable {
     // ----------------------------------------------------------------
     // TODO: These properties should come from properties-project, injected here?
     // Square area we're detecting as containing traffic light:
-    private static final int LIGHT_SIZE = 20;
+    private static final int LIGHT_SIZE = 3;
 
     // Amount of consecutive pixels to make up a border-tape:
     private static final int TAPE_WIDTH_THRESHOLD = 4;
@@ -29,14 +29,14 @@ public class ImageProcessor implements Runnable {
     private static final double TAPE_PIXEL_ERROR_THRESHOLD = 40;
 
     // Color of the boundaries tape (in BGR):
-    private static final int[] TAPE_COLOR = new int[] {150 ,145, 145};
+    private static final int[] TAPE_COLOR = new int[] {125 , 125, 125};
     // Color that kind of matches the red light (in BGR):
-    private static final int[] RED_LIGHT_COLOR = new int[] {10 ,10, 155};
+    private static final int[] RED_LIGHT_COLOR = new int[] {121 ,0, 212};
     // Color that matches the green light (in BGR):
-    private static final int[] GREEN_LIGHT_COLOR = new int[] {67 ,143, 74};
+    private static final int[] GREEN_LIGHT_COLOR = new int[] {70 ,50, 70};
     // Horizon of the (flat) road, don't look above this line:
-    private static final int WEBCAM_HORIZON = 235;
-    private static final int WEBCAM_BOTTOM_OFFSET = 140;
+    private static final int WEBCAM_HORIZON = 350;
+    private static final int WEBCAM_BOTTOM_OFFSET = 40;
     // ----------------------------------------------------------------
 
     // Looping in pixel arrays the step is 3 (B/G/R)
@@ -132,7 +132,7 @@ public class ImageProcessor implements Runnable {
         double lowestError = Double.MAX_VALUE;
         Point2D trafficLightLocation = null;
 
-        int step = LIGHT_SIZE / 4;
+        int step = 1;
         // IMPROVEMENT? Don't scan every pixel, to improve performance, maybe use 2, 3 as step?
         // IMPROVEMENT? Maybe don't scan the entire image for the traffic light? Just the top half?
 
