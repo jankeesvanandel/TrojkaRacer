@@ -24,10 +24,10 @@ public class HardWiredAIService implements AIService {
         counter = 0;
         loopCounter = 0;
         desiredActionsList.add(buildDesiredActions(0, 0.0));
-        desiredActionsList.add(buildDesiredActions(0, 0.25));
-        desiredActionsList.add(buildDesiredActions(0.0, 0.3));
-        desiredActionsList.add(buildDesiredActions(0.0, 0.25));
-        desiredActionsList.add(buildDesiredActions(0.0, 0.0));
+        desiredActionsList.add(buildDesiredActions(0.7, 0.2));
+        desiredActionsList.add(buildDesiredActions(-0.5, 0.0));
+//        desiredActionsList.add(buildDesiredActions(0.0, 0.25));
+//        desiredActionsList.add(buildDesiredActions(0.0, 0.0));
         desiredActionsList.add(buildDesiredActions(0.0, 0.0));
     }
 
@@ -37,12 +37,13 @@ public class HardWiredAIService implements AIService {
             LOGGER.info("STOPPED !!!!");
             return buildDesiredActions(0, 0);
         } else {
+            DesiredActions desiredActions = desiredActionsList.get(counter);
             if (loopCounter++ >= MAX_LOOP) {
                 loopCounter = 0;
                 counter++;
             }
             LOGGER.info(String.format("Counter: %s - Loopcounter: %s", counter, loopCounter));
-            return desiredActionsList.get(counter);
+            return desiredActions;
         }
     }
 

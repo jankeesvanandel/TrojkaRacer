@@ -32,10 +32,9 @@ public class AIServiceImpl implements AIService {
 
     @Override
     public DesiredActions getDesiredActions() {
-        LOGGER.debug("Retrieving new desired actions");
         TrackInfo trackInfo = processingService.getTrackInfo();
 
-        if(trackInfo.getTimestamp() > lastProcessedTimestamp) {
+        if(trackInfo.getTimestamp() > lastProcessedTimestamp && !trackInfo.isStartSignRed()) {
             // Process new trackinfo:
 
             // Maybe we should make the DesiredActions hold just the double values instead of these wrapper items?
@@ -44,10 +43,12 @@ public class AIServiceImpl implements AIService {
                     new DesiredActions(
                         new SteeringAction(steeringAndThrottle[0]),
                         new ThrottleAction(steeringAndThrottle[1]));
+        } else if (desiredActions == null) {
+            desiredActions = new DesiredActions(new SteeringAction(0), new ThrottleAction(0));
         } else {
-            LOGGER.debug("Not creating new desired actions as track info wasn't new compared to last processed timestamp.");
+            LOGGER.info("Not creating new desired actions as track info wasn't new compared to last processed timestamp.");
         }
-        LOGGER.debug("Returning new desired actions of {} and {}", desiredActions.getThrottleAction().getThrottleAmount(),
+        LOGGER.info("Returning new desired actions of {} and {}", desiredActions.getThrottleAction().getThrottleAmount(),
                 desiredActions.getSteeringAction().getSteeringPosition());
         return desiredActions;
     }

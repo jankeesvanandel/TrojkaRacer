@@ -51,9 +51,9 @@ public class ImageProcessor implements Runnable {
     }
 
     // Mutated data:
-    private TrackBoundaries trackBoundaries = null;
-    private Point2D trafficLightLocation = null;
-    private boolean waitingForGreenLight = true;
+    private volatile TrackBoundaries trackBoundaries = null;
+    private volatile Point2D trafficLightLocation = null;
+    private volatile boolean waitingForGreenLight = true;
 
     // Getters:
     public TrackBoundaries getLatestTrackBoundaries() {
@@ -108,13 +108,29 @@ public class ImageProcessor implements Runnable {
         } else if(waitingForGreenLight) {
             // We're waiting for the light to turn green, check the color:
             if(trafficLightTurnedGreen(image, pixels)) {
+                LOGGER.info("");
+                LOGGER.info("");
+                LOGGER.info("");
+                LOGGER.info("");
                 LOGGER.info("Red lights are off....Let's GO !!!");
+                LOGGER.info("");
+                LOGGER.info("");
+                LOGGER.info("");
+                LOGGER.info("");
                 waitingForGreenLight = false;
             } else {
+                LOGGER.info("");
+                LOGGER.info("");
+                LOGGER.info("");
+                LOGGER.info("");
                 LOGGER.info("Waiting for green light...");
+                LOGGER.info("");
+                LOGGER.info("");
+                LOGGER.info("");
+                LOGGER.info("");
             }
         } else {
-            LOGGER.info("Still going strong !!!");
+            LOGGER.debug("Still going strong !!!");
             // Calculate the track boundaries:
             trackBoundaries = calculateTrackBoundaries(image, pixels);
         }

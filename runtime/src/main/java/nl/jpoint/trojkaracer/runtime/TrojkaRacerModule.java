@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -40,6 +42,7 @@ public class TrojkaRacerModule {
     private static final int BRIGHTNESS = 50;
 
     @Provides
+    @Singleton
     RPiCamera provideRPICamera() {
         try {
             final RPiCamera rPiCamera = new RPiCamera(DEFAULT_IMAGE_STORING_DIRECTORY);
@@ -59,28 +62,33 @@ public class TrojkaRacerModule {
     }
 
     @Provides
+    @Singleton
     ImageReader provideImageReader(final RPiCamera rPiCamera) {
         return new WebcamReader(rPiCamera, STORE_IMAGES);
     }
 
     @Provides
+    @Singleton
     ImageProcessor provideImageProcessor(final ImageReader imageReader) {
 //        return new ImageProcessor(imageReader);
         return new ImageProcessor(imageReader);
     }
 
     @Provides
+    @Singleton
     ProcessingService provideProcessingService(final ImageProcessor imageProcessor) {
         return new ProcessingServiceImpl(imageProcessor);
     }
 
     @Provides
+    @Singleton
     AIService provideAIService(final ProcessingService processingService) {
 //        return new HardWiredAIService();
         return new AIServiceImpl(processingService);
     }
 
     @Provides
+    @Singleton
     ScheduledExecutorService provideScheduledExecutorService() {
         return Executors.newScheduledThreadPool(2);
     }

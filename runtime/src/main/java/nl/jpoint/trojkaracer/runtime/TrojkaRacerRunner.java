@@ -19,8 +19,8 @@ import dagger.ObjectGraph;
 public class TrojkaRacerRunner {
 
     private static final int MILLIS = 1000;
-    private static final int NR_OF_SCANS_PER_SECOND = 200;
-    private static final int NR_OF_MAIN_LOOPS_PER_SECOND = 100;
+    private static final int NR_OF_SCANS_PER_SECOND = 10;
+    private static final int NR_OF_MAIN_LOOPS_PER_SECOND = 10;
     private static final long EXECUTOR_DELAY_IN_MILLIS = 100L;
     private static final Logger LOGGER = LoggerFactory.getLogger(TrojkaRacerRunner.class);
 
@@ -60,6 +60,7 @@ public class TrojkaRacerRunner {
                     trojkaRacerMainLoop, EXECUTOR_DELAY_IN_MILLIS, (long) MILLIS / NR_OF_MAIN_LOOPS_PER_SECOND, TimeUnit.MILLISECONDS);
 
             while (!scheduledFutureImageProcessor.isCancelled() && !scheduledFutureMainLoop.isCancelled())  {
+                Thread.sleep(10);
                 // Do nothing
             }
         } catch (Exception e) {
