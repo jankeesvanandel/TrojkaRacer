@@ -70,8 +70,8 @@ public class TrojkaRacerModule {
     @Provides
     @Singleton
     ImageProcessor provideImageProcessor(final ImageReader imageReader) {
-//        return new ImageProcessor(imageReader);
         return new ImageProcessor(imageReader);
+//        return new ImageProcessor(imageReader).withNoEyeForTrafficLights();
     }
 
     @Provides
