@@ -1,0 +1,102 @@
+<configuration scan="true" debug="false">
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <!-- pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern -->
+            <pattern>%d{HH:mm:ss.SSS} [%-16.-16X{currentService}] [%-14.-14X{CurrentUserId}] %50.50logger{50} %.-1p %m%n%rEx</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+    </appender>
+
+    <!--Migration log -->
+    <!--<appender name="MIGRATION" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+        <!--<File>/var/log/vertx/etsl-migration.log</File>-->
+        <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+            <!--<FileNamePattern>/var/log/vertx/etsl-migration-%d{EEE}.log</FileNamePattern>-->
+        <!--</rollingPolicy>-->
+        <!--<encoder>-->
+            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss} [%50.50thread] [%12.12X{CurrentUserId}] %65.65logger{65} %.-1p %m%n%rEx</pattern>-->
+        <!--</encoder>-->
+    <!--</appender>-->
+
+    <!--persistence log -->
+    <!--<appender name="SAVELOG" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+        <!--<File>/var/log/vertx/etsl-persistence.log</File>-->
+        <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+            <!--<FileNamePattern>/var/log/vertx/etsl-persistence-%d{EEE}.log</FileNamePattern>-->
+        <!--</rollingPolicy>-->
+        <!--<encoder>-->
+            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss} [%50.50thread] [%12.12X{CurrentUserId}] %65.65logger{65} %.-1p %m%n%rEx</pattern>-->
+        <!--</encoder>-->
+    <!--</appender>-->
+
+    <!--<appender name="DEPLOY" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+        <!--<File>/var/log/vertx/deploy.log</File>-->
+        <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+            <!--<FileNamePattern>/var/log/vertx/deploy-%d{dd}.log</FileNamePattern>-->
+        <!--</rollingPolicy>-->
+        <!--<encoder>-->
+            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss} [%50.50thread] %55.55logger{55} %.-1p %m%n%rEx</pattern>-->
+        <!--</encoder>-->
+    <!--</appender>-->
+
+    <!--<logger name="nl.malmberg" level="info" />-->
+
+    <!--<logger name="nl.sl" level="debug" />-->
+    <!--<logger name="TRACE" level="info" />-->
+    <!--<logger name="STOPWATCH" level="info" />-->
+    <!--<logger name="nl.sl.et.service" level="trace" />-->
+    <!--<logger name="nl.sl.et.service.shared.bus.controller" level="trace" />-->
+    <!--<logger name="nl.sl.et.service.shared.export" level="trace" />-->
+    <!--<logger name="nl.sl.et.service.shared.search" level="trace" />-->
+
+    <!--<logger name="nl.sl.et.service.shared.properties.Configurator" level="info" />-->
+    <!--<logger name="nl.sl.et.service.shared.http.filter.SessionFilter" level="info" />-->
+    <!--<logger name="nl.sl.et.service.etsl.bus.auth.GetSessionEventHandler" level="info" />-->
+
+    <!--&lt;!&ndash; Mongo &ndash;&gt;-->
+    <!--<logger name="com.mongodb" level="warn"/>-->
+    <!--<logger name="Mongo.explain" level="off" /> &lt;!&ndash; trace level explains &ndash;&gt;-->
+    <!--<logger name="com.mongodb" level="warn"/>-->
+    <!--<logger name="nl.sl.et.service.shared.data.mongo.MongoConnector" level="info"/>-->
+
+    <!--&lt;!&ndash; see RequestLogFilter &ndash;&gt;-->
+    <!--<logger name="Request" level="debug" />-->
+    <!--&lt;!&ndash;-->
+    <!--<logger name="Request.handle" level="debug" />-->
+    <!--<logger name="Request.postdata" level="debug" />-->
+    <!--<logger name="Request.headers" level="debug" />-->
+    <!--<logger name="Response.headers" level="debug" />-->
+    <!--&ndash;&gt;-->
+
+    <!--<logger name="com.jcabi" level="info" />-->
+    <!--<logger name="io.netty" level="warn" />-->
+    <!--<logger name="org.hibernate" level="warn" />-->
+    <!--<logger name="org.apache.http" level="info" />-->
+
+    <!--<logger name="nl.jpoint" level="INFO" additivity="false">-->
+        <!--<appender-ref ref="DEPLOY" />-->
+    <!--</logger>-->
+
+    <!--<logger name="migration" level="trace" additivity="true">-->
+        <!--<appender-ref ref="MIGRATION"/>-->
+    <!--</logger>-->
+
+    <!--<logger name="SAVELOG" level="trace" additivity="true">-->
+        <!--<appender-ref ref="SAVELOG"/>-->
+    <!--</logger>-->
+
+    <root>
+        <level value="info" />
+        <appender-ref ref="STDOUT" />
+        <!--<appender-ref ref="FILE" />-->
+    </root>
+
+</configuration>
+

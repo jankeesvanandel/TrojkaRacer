@@ -55,7 +55,7 @@ public class AIServiceImpl implements AIService {
     private double[] calculateSteeringAndThrottle(TrackInfo trackInfo) {
         TrackBoundaries boundaries = trackInfo.getBoundaries();
         if (boundaries == null) {
-            LOGGER.warn("No boundaries detected for trackinfo {}; setting desired action to neutral/stopped position", trackInfo.getTimestamp());
+            LOGGER.debug("No boundaries detected for trackinfo {}; setting desired action to neutral/stopped position", trackInfo.getTimestamp());
             return new double[] { 0.0, 0.0 };
         }
 

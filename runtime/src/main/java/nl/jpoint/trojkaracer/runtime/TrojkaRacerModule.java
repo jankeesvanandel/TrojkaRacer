@@ -8,6 +8,7 @@ import com.hopding.jrpicam.exceptions.FailedToRunRaspistillException;
 
 import nl.jpoint.trojkaracer.ai.AIService;
 import nl.jpoint.trojkaracer.ai.AIServiceImpl;
+import nl.jpoint.trojkaracer.ai.HardWiredAIService;
 import nl.jpoint.trojkaracer.hardwareinterface.ArduinoHardwareControllerModule;
 import nl.jpoint.trojkaracer.processing.ImageProcessor;
 import nl.jpoint.trojkaracer.processing.ImageReader;
@@ -45,10 +46,11 @@ public class TrojkaRacerModule {
             rPiCamera.setToDefaults();
             rPiCamera.setWidth(IMAGE_WIDTH);
             rPiCamera.setHeight(IMAGE_HEIGHT);
-            rPiCamera.setBrightness(BRIGHTNESS);
+//            rPiCamera.setBrightness(BRIGHTNESS);
             rPiCamera.setFullPreviewOff();
-            rPiCamera.setDRC(DRC.OFF);
-            rPiCamera.setAWB(AWB.OFF);
+//            rPiCamera.setDRC(DRC.OFF);
+//            rPiCamera.setAWB(AWB.OFF);
+            rPiCamera.setTimeout(1);
             return rPiCamera;
         } catch (final FailedToRunRaspistillException e) {
             LOGGER.error("Failed to create the camera instance", e);
@@ -64,7 +66,7 @@ public class TrojkaRacerModule {
     @Provides
     ImageProcessor provideImageProcessor(final ImageReader imageReader) {
 //        return new ImageProcessor(imageReader);
-        return new ImageProcessor(imageReader).withNoEyeForTrafficLights();
+        return new ImageProcessor(imageReader);
     }
 
     @Provides
@@ -74,6 +76,7 @@ public class TrojkaRacerModule {
 
     @Provides
     AIService provideAIService(final ProcessingService processingService) {
+//        return new HardWiredAIService();
         return new AIServiceImpl(processingService);
     }
 

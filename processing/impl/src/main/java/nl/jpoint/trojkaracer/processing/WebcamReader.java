@@ -35,7 +35,7 @@ public class WebcamReader implements ImageReader {
             } else {
                 bufferedImage = rPiCamera.takeBufferedStill();
             }
-            LOGGER.debug("------ Took picture in {} ms", System.currentTimeMillis() - time);
+            LOGGER.info("------ Took picture in {} ms", System.currentTimeMillis() - time);
             return bufferedImage;
         } catch (final IOException | InterruptedException e) {
             LOGGER.error("Failed to fetch the next image.", e);

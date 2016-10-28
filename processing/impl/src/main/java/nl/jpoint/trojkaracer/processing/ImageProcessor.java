@@ -31,9 +31,9 @@ public class ImageProcessor implements Runnable {
     // Color of the boundaries tape (in BGR):
     private static final int[] TAPE_COLOR = new int[] {125 , 125, 125};
     // Color that kind of matches the red light (in BGR):
-    private static final int[] RED_LIGHT_COLOR = new int[] {121 ,0, 212};
+    private static final int[] RED_LIGHT_COLOR = new int[] {140 ,60, 230};
     // Color that matches the green light (in BGR):
-    private static final int[] GREEN_LIGHT_COLOR = new int[] {70 ,50, 70};
+    private static final int[] GREEN_LIGHT_COLOR = new int[] {70 ,50, 80};
     // Horizon of the (flat) road, don't look above this line:
     private static final int WEBCAM_HORIZON = 350;
     private static final int WEBCAM_BOTTOM_OFFSET = 40;
@@ -102,7 +102,7 @@ public class ImageProcessor implements Runnable {
             LOGGER.info("Searching for traffic light..");
             // We're starting, no traffic light has been found yet:
             trafficLightLocation = findRedTrafficLightLocation(image, pixels);
-            LOGGER.debug("Traffic light location set to {}", trafficLightLocation);
+            LOGGER.info("Traffic light location set to {}", trafficLightLocation);
             // Calculate the track once (when we start we have a track):
             trackBoundaries = calculateTrackBoundaries(image, pixels);
         } else if(waitingForGreenLight) {
@@ -110,8 +110,11 @@ public class ImageProcessor implements Runnable {
             if(trafficLightTurnedGreen(image, pixels)) {
                 LOGGER.info("Red lights are off....Let's GO !!!");
                 waitingForGreenLight = false;
+            } else {
+                LOGGER.info("Waiting for green light...");
             }
         } else {
+            LOGGER.info("Still going strong !!!");
             // Calculate the track boundaries:
             trackBoundaries = calculateTrackBoundaries(image, pixels);
         }
