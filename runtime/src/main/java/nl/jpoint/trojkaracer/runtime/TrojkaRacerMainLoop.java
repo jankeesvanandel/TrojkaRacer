@@ -4,7 +4,7 @@ import nl.jpoint.trojkaracer.ai.AIService;
 import nl.jpoint.trojkaracer.ai.DesiredActions;
 import nl.jpoint.trojkaracer.hardwareinterface.DirectionController;
 import nl.jpoint.trojkaracer.hardwareinterface.SpeedController;
-
+import nl.jpoint.trojkaracer.pid.Killable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import javax.inject.Singleton;
  * through the specific controllers to the hardware.
  */
 @Singleton
-public class TrojkaRacerMainLoop implements Runnable {
+public class TrojkaRacerMainLoop implements Runnable, Killable {
 
     private static final int PERCENTAGE = 100;
     private static final Logger LOGGER = LoggerFactory.getLogger(TrojkaRacerMainLoop.class);
@@ -55,5 +55,11 @@ public class TrojkaRacerMainLoop implements Runnable {
         } catch (Exception e) {
             LOGGER.error("Error in main loop: ", e);
         }
+    }
+
+    @Override
+    public void kill() {
+        speedController.stop();
+        directionController.stop();
     }
 }

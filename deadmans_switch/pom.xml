@@ -13,7 +13,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trojkaracer-deatmans-switch</artifactId>
+    <artifactId>trojkaracer-deadmans-switch</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>

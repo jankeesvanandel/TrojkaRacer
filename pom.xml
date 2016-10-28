@@ -18,7 +18,7 @@
         <module>ai</module>
         <module>hardware_interface</module>
         <module>pid</module>
-        <!--<module>deadmans_switch</module>-->
+        <module>deadmans_switch</module>
         <module>runtime</module>
         <module>web</module>
     </modules>
