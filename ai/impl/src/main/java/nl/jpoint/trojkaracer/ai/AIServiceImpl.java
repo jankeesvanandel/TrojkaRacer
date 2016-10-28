@@ -4,11 +4,19 @@ import nl.jpoint.trojkaracer.processing.ProcessingService;
 import nl.jpoint.trojkaracer.processing.TrackBoundaries;
 import nl.jpoint.trojkaracer.processing.TrackInfo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import java.util.List;
 import java.util.stream.IntStream;
 
+@Singleton
 public class AIServiceImpl implements AIService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AIServiceImpl.class);
 
     private static final double THROTTLE_FACTOR = 40.0d;
     private static final double MAX_THROTTLE = 1.0d;
@@ -24,8 +32,9 @@ public class AIServiceImpl implements AIService {
 
     @Override
     public DesiredActions getDesiredActions() {
-
+        LOGGER.debug("Retrieving new desired actions");
         TrackInfo trackInfo = processingService.getTrackInfo();
+
         if(trackInfo.getTimestamp() > lastProcessedTimestamp) {
             // Process new trackinfo:
 
@@ -35,16 +44,27 @@ public class AIServiceImpl implements AIService {
                     new DesiredActions(
                         new SteeringAction(steeringAndThrottle[0]),
                         new ThrottleAction(steeringAndThrottle[1]));
+        } else {
+            LOGGER.debug("Not creating new desired actions as track info wasn't new compared to last processed timestamp.");
         }
+        LOGGER.debug("Returning new desired actions of {} and {}", desiredActions.getThrottleAction().getThrottleAmount(),
+                desiredActions.getSteeringAction().getSteeringPosition());
         return desiredActions;
     }
 
     private double[] calculateSteeringAndThrottle(TrackInfo trackInfo) {
         TrackBoundaries boundaries = trackInfo.getBoundaries();
+        if (boundaries == null) {
+            LOGGER.warn("No boundaries detected for trackinfo {}; setting desired action to neutral/stopped position", trackInfo.getTimestamp());
+            return new double[] { 0.0, 0.0 };
+        }
+
         List<int[]> scannedLines = boundaries.getScannedLines();
+        LOGGER.debug("C");
         double nextX = 0, nextY = 0;
         double currentX = 0, currentY = 0;
         boolean firstVisibleTrackPart = true;
+        int i = 0;
         for (int[] scannedLine : scannedLines) {
             if (scannedLine.length == 0) {
                 // No more data, abort.

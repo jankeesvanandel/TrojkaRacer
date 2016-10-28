@@ -1,5 +1,8 @@
 package nl.jpoint.trojkaracer.processing;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import java.awt.*;
@@ -37,6 +40,7 @@ public class ImageProcessor implements Runnable {
 
     // Looping in pixel arrays the step is 3 (B/G/R)
     private static final int PIXEL_STEP = 3;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessor.class);
 
     private ImageReader imageReader;
 
@@ -63,6 +67,12 @@ public class ImageProcessor implements Runnable {
         return waitingForGreenLight;
     }
 
+    public ImageProcessor withNoEyeForTrafficLights() {
+        trafficLightLocation = new Point2D.Double(0.0, 0.0);
+        waitingForGreenLight = false;
+        return this;
+    }
+
     /**
      * When this processor is launched it will:
      *
@@ -74,21 +84,30 @@ public class ImageProcessor implements Runnable {
      * TODO: How are we bootstrapping all the code?
      */
     public void run() {
-
+        LOGGER.debug("Fetching new image");
         // Fetch image from webcam:
         BufferedImage image = imageReader.fetchImage();
+
+        if (image == null) {
+            LOGGER.warn("Failed to fetch image from the imageReader; not analyzing any image.");
+            return;
+        }
+
 
         // Analyze image:
 
         byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
         if(trafficLightLocation == null) {
+            LOGGER.info("Searching for traffic light..");
             // We're starting, no traffic light has been found yet:
             trafficLightLocation = findRedTrafficLightLocation(image, pixels);
+            LOGGER.debug("Traffic light location set to {}", trafficLightLocation);
             // Calculate the track once (when we start we have a track):
             trackBoundaries = calculateTrackBoundaries(image, pixels);
         } else if(waitingForGreenLight) {
             // We're waiting for the light to turn green, check the color:
             if(trafficLightTurnedGreen(image, pixels)) {
+                LOGGER.info("Red lights are off....Let's GO !!!");
                 waitingForGreenLight = false;
             }
         } else {
