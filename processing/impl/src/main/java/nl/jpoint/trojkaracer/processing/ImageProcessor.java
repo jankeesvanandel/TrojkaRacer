@@ -67,6 +67,12 @@ public class ImageProcessor implements Runnable {
         return waitingForGreenLight;
     }
 
+    public ImageProcessor withNoEyeForTrafficLights() {
+        trafficLightLocation = new Point2D.Double(0.0, 0.0);
+        waitingForGreenLight = false;
+        return this;
+    }
+
     /**
      * When this processor is launched it will:
      *
@@ -87,18 +93,21 @@ public class ImageProcessor implements Runnable {
             return;
         }
 
+
         // Analyze image:
 
         byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-        LOGGER.debug("Pixels size: " + pixels.length);
         if(trafficLightLocation == null) {
+            LOGGER.info("Searching for traffic light..");
             // We're starting, no traffic light has been found yet:
             trafficLightLocation = findRedTrafficLightLocation(image, pixels);
+            LOGGER.debug("Traffic light location set to {}", trafficLightLocation);
             // Calculate the track once (when we start we have a track):
             trackBoundaries = calculateTrackBoundaries(image, pixels);
         } else if(waitingForGreenLight) {
             // We're waiting for the light to turn green, check the color:
             if(trafficLightTurnedGreen(image, pixels)) {
+                LOGGER.info("Red lights are off....Let's GO !!!");
                 waitingForGreenLight = false;
             }
         } else {

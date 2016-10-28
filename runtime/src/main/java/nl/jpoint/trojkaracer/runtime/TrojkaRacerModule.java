@@ -30,7 +30,7 @@ public class TrojkaRacerModule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrojkaRacerModule.class);
     private static final String DEFAULT_IMAGE_STORING_DIRECTORY = "/home/pi/Pictures";
-    private static final boolean STORE_IMAGES = true;
+    private static final boolean STORE_IMAGES = false;
     private static final int IMAGE_WIDTH = 500;
     private static final int IMAGE_HEIGHT = 500;
     private static final int BRIGHTNESS = 50;
@@ -42,6 +42,8 @@ public class TrojkaRacerModule {
             rPiCamera.setWidth(IMAGE_WIDTH);
             rPiCamera.setHeight(IMAGE_HEIGHT);
             rPiCamera.setBrightness(BRIGHTNESS);
+            rPiCamera.setFullPreviewOff();
+//            rPiCamera.setTimeout(1);
             return rPiCamera;
         } catch (final FailedToRunRaspistillException e) {
             LOGGER.error("Failed to create the camera instance", e);
@@ -56,7 +58,8 @@ public class TrojkaRacerModule {
 
     @Provides
     ImageProcessor provideImageProcessor(final ImageReader imageReader) {
-        return new ImageProcessor(imageReader);
+//        return new ImageProcessor(imageReader);
+        return new ImageProcessor(imageReader).withNoEyeForTrafficLights();
     }
 
     @Provides
