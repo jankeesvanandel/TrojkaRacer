@@ -26,6 +26,8 @@ public class TrojkaRacerMainLoop implements Runnable, Killable {
     private final SpeedController<Integer> speedController;
     private final DirectionController<Integer> directionController;
 
+    private boolean isStopped;
+
     @Inject
     public TrojkaRacerMainLoop(final AIService aiService,
                                final SpeedController<Integer> speedController,
@@ -34,6 +36,7 @@ public class TrojkaRacerMainLoop implements Runnable, Killable {
         this.speedController = speedController;
         this.directionController = directionController;
 
+        isStopped = false;
         LOGGER.debug("Created new {} instance.", getClass().getSimpleName());
     }
 
@@ -42,16 +45,15 @@ public class TrojkaRacerMainLoop implements Runnable, Killable {
         try {
             LOGGER.debug("Retrieving new set points and applying them to the car controllers");
             final DesiredActions desiredActions = aiService.getDesiredActions();
-            if (desiredActions != null) {
+            if (desiredActions != null && !isStopped) {
                 final Double steeringSetPoint = desiredActions.getSteeringAction().getSteeringPosition() * PERCENTAGE;
                 final Double throttleSetPoint = desiredActions.getThrottleAction().getThrottleAmount() * PERCENTAGE;
 
                 LOGGER.info("Setting a new required speed of {} and a required direction of {}", throttleSetPoint.intValue(), steeringSetPoint.intValue());
 
                 directionController.setDirection(steeringSetPoint.intValue());
-//                speedController.setSpeed(throttleSetPoint.intValue());
+                speedController.setSpeed(throttleSetPoint.intValue());
             }
-
         } catch (Exception e) {
             LOGGER.error("Error in main loop: ", e);
         }
@@ -59,6 +61,8 @@ public class TrojkaRacerMainLoop implements Runnable, Killable {
 
     @Override
     public void kill() {
+        LOGGER.warn("Kill called on main loop!");
+        isStopped = true;
         speedController.stop();
         directionController.stop();
     }

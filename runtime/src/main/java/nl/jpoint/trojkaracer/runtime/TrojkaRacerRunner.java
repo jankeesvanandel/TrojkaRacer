@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class TrojkaRacerRunner{
 
     private static final int MILLIS = 1000;
-    private static final int NR_OF_SCANS_PER_SECOND = 10;
+    private static final int NR_OF_SCANS_PER_SECOND = 5;
     private static final int NR_OF_MAIN_LOOPS_PER_SECOND = 10;
     private static final long EXECUTOR_DELAY_IN_MILLIS = 100L;
     private static final Logger LOGGER = LoggerFactory.getLogger(TrojkaRacerRunner.class);

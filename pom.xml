@@ -74,16 +74,16 @@
             </dependency>
 
             <!-- Hardware specific libraries -->
-            <dependency>
-                <groupId>com.pi4j</groupId>
-                <artifactId>pi4j-core</artifactId>
-                <version>1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.pi4j</groupId>
-                <artifactId>pi4j-device</artifactId>
-                <version>1.1</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>com.pi4j</groupId>-->
+                <!--<artifactId>pi4j-core</artifactId>-->
+                <!--<version>1.1</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>com.pi4j</groupId>-->
+                <!--<artifactId>pi4j-device</artifactId>-->
+                <!--<version>1.1</version>-->
+            <!--</dependency>-->
             <dependency>
                 <groupId>com.hopding</groupId>
                 <artifactId>jrpicam</artifactId>

@@ -43,12 +43,13 @@ public class AIServiceImpl implements AIService {
                     new DesiredActions(
                         new SteeringAction(steeringAndThrottle[0]),
                         new ThrottleAction(steeringAndThrottle[1]));
+            lastProcessedTimestamp = trackInfo.getTimestamp();
         } else if (desiredActions == null) {
             desiredActions = new DesiredActions(new SteeringAction(0), new ThrottleAction(0));
         } else {
             LOGGER.info("Not creating new desired actions as track info wasn't new compared to last processed timestamp.");
         }
-        LOGGER.info("Returning new desired actions of {} and {}", desiredActions.getThrottleAction().getThrottleAmount(),
+        LOGGER.debug("Returning new desired actions of {} and {}", desiredActions.getThrottleAction().getThrottleAmount(),
                 desiredActions.getSteeringAction().getSteeringPosition());
         return desiredActions;
     }
@@ -65,7 +66,6 @@ public class AIServiceImpl implements AIService {
         double nextX = 0, nextY = 0;
         double currentX = 0, currentY = 0;
         boolean firstVisibleTrackPart = true;
-        int i = 0;
         for (int[] scannedLine : scannedLines) {
             if (scannedLine.length == 0) {
                 // No more data, abort.

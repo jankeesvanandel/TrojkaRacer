@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by tim on 28-10-16.
+ * {@link AIService} implementation that actually does no AI at all, but simply responds with desired actions taken from a sequential list of desired actions.
+ * This implementation can be used for testing purposes or hardcoding the direction and speed the car should get in sequential order.
  */
 public class HardWiredAIService implements AIService {
 
-    private static final int MAX_LOOP = 20;
+    private static final int MAX_LOOP = 10;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HardWiredAIService.class);
 
@@ -20,21 +21,18 @@ public class HardWiredAIService implements AIService {
     private int loopCounter;
 
     public HardWiredAIService() {
-        desiredActionsList = new ArrayList<DesiredActions>();
+        desiredActionsList = new ArrayList<>();
         counter = 0;
         loopCounter = 0;
         desiredActionsList.add(buildDesiredActions(0, 0.0));
-        desiredActionsList.add(buildDesiredActions(0.7, 0.2));
-        desiredActionsList.add(buildDesiredActions(-0.5, 0.0));
-//        desiredActionsList.add(buildDesiredActions(0.0, 0.25));
-//        desiredActionsList.add(buildDesiredActions(0.0, 0.0));
-        desiredActionsList.add(buildDesiredActions(0.0, 0.0));
+        desiredActionsList.add(buildDesiredActions(0.195, 0.0));
+        desiredActionsList.add(buildDesiredActions(0, 0.0));
     }
 
     @Override
     public DesiredActions getDesiredActions() {
         if (counter >= desiredActionsList.size()) {
-            LOGGER.info("STOPPED !!!!");
+            LOGGER.info("Hardwaired AI Server is finished....no desired actions anymore");
             return buildDesiredActions(0, 0);
         } else {
             DesiredActions desiredActions = desiredActionsList.get(counter);
@@ -42,7 +40,6 @@ public class HardWiredAIService implements AIService {
                 loopCounter = 0;
                 counter++;
             }
-            LOGGER.info(String.format("Counter: %s - Loopcounter: %s", counter, loopCounter));
             return desiredActions;
         }
     }

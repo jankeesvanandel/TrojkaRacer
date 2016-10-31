@@ -14,6 +14,7 @@ import nl.jpoint.trojkaracer.hardwareinterface.ArduinoHardwareControllerModule;
 import nl.jpoint.trojkaracer.hardwareinterface.DirectionController;
 import nl.jpoint.trojkaracer.hardwareinterface.SpeedController;
 import nl.jpoint.trojkaracer.pid.Killable;
+import nl.jpoint.trojkaracer.processing.ImageDirectoryReader;
 import nl.jpoint.trojkaracer.processing.ImageProcessor;
 import nl.jpoint.trojkaracer.processing.ImageReader;
 import nl.jpoint.trojkaracer.processing.ProcessingService;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Named;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -41,7 +43,7 @@ public class TrojkaRacerModule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrojkaRacerModule.class);
     private static final String DEFAULT_IMAGE_STORING_DIRECTORY = "/home/pi/Pictures";
-    private static final boolean STORE_IMAGES = false;
+    private static final boolean STORE_IMAGES = true;
     private static final int IMAGE_WIDTH = 640;
     private static final int IMAGE_HEIGHT = 480;
     private static final int BRIGHTNESS = 50;
@@ -69,14 +71,16 @@ public class TrojkaRacerModule {
     @Provides
     @Singleton
     ImageReader provideImageReader(final RPiCamera rPiCamera) {
-        return new WebcamReader(rPiCamera, STORE_IMAGES);
+//        return new WebcamReader(rPiCamera, STORE_IMAGES);
+        return new ImageDirectoryReader(Paths.get("/home/pi/Pictures"), fileName -> fileName.endsWith(".jpg"),
+                ImageDirectoryReader.FILE_LASTMODIFIED_DATE_COMPARATOR);
     }
 
     @Provides
     @Singleton
     ImageProcessor provideImageProcessor(final ImageReader imageReader) {
-        return new ImageProcessor(imageReader);
-//        return new ImageProcessor(imageReader).withNoEyeForTrafficLights();
+        return new ImageProcessor(imageReader).withDebugImageOutputPath("/home/pi/debug-images/");
+//        return new ImageProcessor(imageReader).withDebugImageOutputPath("/home/pi/debug-images/").withNoEyeForTrafficLights();
     }
 
     @Provides
@@ -98,10 +102,8 @@ public class TrojkaRacerModule {
     }
 
     @Provides
-    Killable provideKillable(final AIService aiService,
-                             final SpeedController<Integer> speedController,
-                             final DirectionController<Integer> directionController){
-        return new TrojkaRacerMainLoop(aiService, speedController, directionController);
+    Killable provideKillable(final TrojkaRacerMainLoop trojkaRacerMainLoop) {
+        return trojkaRacerMainLoop;
     }
 
     @Provides
@@ -117,7 +119,7 @@ public class TrojkaRacerModule {
     @Provides
     @Named("deadmanswitch.host")
     String provideDeadmanSwitchHost(){
-        return "127.0.0.1";
+        return "10.0.1.2";
     }
 
     @Provides

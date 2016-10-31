@@ -26,17 +26,17 @@ public class ImageProcessor implements Runnable {
     // Amount of consecutive pixels to make up a border-tape:
     private static final int TAPE_WIDTH_THRESHOLD = 4;
     // Mean sqrt color error between TAPE_COLOR and camera
-    private static final double TAPE_PIXEL_ERROR_THRESHOLD = 40;
+    private static final double TAPE_PIXEL_ERROR_THRESHOLD = 50;
 
     // Color of the boundaries tape (in BGR):
-    private static final int[] TAPE_COLOR = new int[] {125 , 125, 125};
+    private static final int[] TAPE_COLOR = new int[] {80 , 80, 100};
     // Color that kind of matches the red light (in BGR):
     private static final int[] RED_LIGHT_COLOR = new int[] {140 ,60, 230};
     // Color that matches the green light (in BGR):
     private static final int[] GREEN_LIGHT_COLOR = new int[] {70 ,50, 80};
     // Horizon of the (flat) road, don't look above this line:
-    private static final int WEBCAM_HORIZON = 350;
-    private static final int WEBCAM_BOTTOM_OFFSET = 40;
+    private static final int WEBCAM_HORIZON = 340;
+    private static final int WEBCAM_BOTTOM_OFFSET = 60;
     // ----------------------------------------------------------------
 
     // Looping in pixel arrays the step is 3 (B/G/R)
@@ -44,6 +44,8 @@ public class ImageProcessor implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessor.class);
 
     private ImageReader imageReader;
+    private String debugImageOutputPath;
+    private int debugImageCount = 0;
 
     @Inject
     public ImageProcessor(ImageReader imageReader) {
@@ -71,6 +73,12 @@ public class ImageProcessor implements Runnable {
     public ImageProcessor withNoEyeForTrafficLights() {
         trafficLightLocation = new Point2D.Double(0.0, 0.0);
         waitingForGreenLight = false;
+        debugImageOutputPath = null;
+        return this;
+    }
+
+    public ImageProcessor withDebugImageOutputPath(final String outputPath) {
+        debugImageOutputPath = outputPath;
         return this;
     }
 
@@ -255,7 +263,9 @@ public class ImageProcessor implements Runnable {
 
         List<int[]> calculatedBoundaries = extractBoundaries(image, scanlines);
 
-        dumpDebugImage(image, calculatedBoundaries);
+        if (debugImageOutputPath != null) {
+            dumpDebugImage(image, calculatedBoundaries);
+        }
 
         TrackBoundaries newTrackBoundaries = new TrackBoundaries(calculatedBoundaries);
         return newTrackBoundaries;
@@ -321,7 +331,6 @@ public class ImageProcessor implements Runnable {
      * @param trackBoundaries
      * @return
      */
-    static int cnt = 0;
     private void dumpDebugImage(BufferedImage image, List<int[]> trackBoundaries) {
         BufferedImage tImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         Graphics2D g = (Graphics2D) tImage.getGraphics();
@@ -345,7 +354,9 @@ public class ImageProcessor implements Runnable {
         }
 
         try {
-            ImageIO.write(tImage, "PNG", new File("output"+(cnt++)+".png"));
+            final File file = new File(String.format("%s/output%d.png", debugImageOutputPath, debugImageCount++));
+            LOGGER.info("Writing file for debugging purposes: " + file.getAbsolutePath());
+            ImageIO.write(tImage, "PNG", file);
         } catch (IOException e) {
             e.printStackTrace();
         }
