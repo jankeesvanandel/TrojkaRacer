@@ -45,7 +45,7 @@ public class LineProcessorTest {
     @Test
     public void testAngles() throws Exception {
         Assert.assertEquals(-12, process("src/test/resources/stills/still-105147.439.jpg").getDegrees());
-        Assert.assertEquals(-25, process("src/test/resources/stills/still-105302.608.jpg").getDegrees());
+        Assert.assertEquals(-39, process("src/test/resources/stills/still-105302.608.jpg").getDegrees());
     }
 
     public NavigationDirections process(final String still) {
