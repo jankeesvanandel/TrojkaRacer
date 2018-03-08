@@ -1,6 +1,5 @@
 package nl.jpoint.trojkaracer.car.domain.navigator;
 
-import java.util.List;
 import nl.jpoint.trojkaracer.car.domain.computervision.ComputerVisionHelper;
 import nl.jpoint.trojkaracer.car.domain.computervision.Line;
 import org.opencv.core.Mat;
@@ -8,11 +7,14 @@ import org.opencv.core.Scalar;
 import org.reactivestreams.Subscriber;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
+
 /**
  * The basic navigator.
  */
 public class BasicNavigator implements Navigator {
 
+    private final LineProcessor lineProcessor = new LineProcessor();
     private final Flux<NavigationDirections> navigationDirectionsFlux;
 
     public BasicNavigator(final Flux<Mat> viewPublisher, final ComputerVisionHelper computerVisionHelper) {
@@ -32,7 +34,7 @@ public class BasicNavigator implements Navigator {
     }
 
     private NavigationDirections navigateBetweenLines(final List<Line> lines) {
-        return NavigationDirections.of(0);
+        return lineProcessor.process(lines);
     }
 
 }

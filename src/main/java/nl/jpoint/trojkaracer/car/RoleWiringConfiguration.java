@@ -1,6 +1,5 @@
 package nl.jpoint.trojkaracer.car;
 
-import java.time.Duration;
 import nl.jpoint.trojkaracer.car.domain.computervision.ComputerVisionHelper;
 import nl.jpoint.trojkaracer.car.domain.driver.DriveCommand;
 import nl.jpoint.trojkaracer.car.domain.driver.Driver;
@@ -8,18 +7,17 @@ import nl.jpoint.trojkaracer.car.domain.driver.SimpleDriver;
 import nl.jpoint.trojkaracer.car.domain.driver.WrappingDriver;
 import nl.jpoint.trojkaracer.car.domain.finisher.AutomaticallyTimedFinisher;
 import nl.jpoint.trojkaracer.car.domain.finisher.Finisher;
-import nl.jpoint.trojkaracer.car.domain.finisher.NoFinisher;
 import nl.jpoint.trojkaracer.car.domain.navigator.BasicNavigator;
-import nl.jpoint.trojkaracer.car.domain.navigator.FixedPathNavigator;
 import nl.jpoint.trojkaracer.car.domain.navigator.Navigator;
 import nl.jpoint.trojkaracer.car.domain.starter.AutomaticallyTimedStarter;
-import nl.jpoint.trojkaracer.car.domain.starter.RedLightStarter;
 import nl.jpoint.trojkaracer.car.domain.starter.Starter;
 import org.opencv.core.Mat;
 import org.reactivestreams.Publisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Flux;
+
+import java.time.Duration;
 
 /**
  * Spring configuration class that programmatically wires the correct implementations to each role (driver, navigator etc.).

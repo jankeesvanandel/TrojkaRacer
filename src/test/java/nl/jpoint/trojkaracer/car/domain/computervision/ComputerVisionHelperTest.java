@@ -1,10 +1,5 @@
 package nl.jpoint.trojkaracer.car.domain.computervision;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -13,7 +8,14 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for the {@link ComputerVisionHelper} class. It provides some "scratch" testing methods, methods that do no real assertions, but write an image
@@ -28,6 +30,7 @@ public class ComputerVisionHelperTest {
 
     @BeforeClass
     public static void cameraInit() throws InterruptedException {
+        System.out.println(System.getProperty("java.library.path"));
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
         camera = new VideoCapture(0);
@@ -38,16 +41,17 @@ public class ComputerVisionHelperTest {
 
     @Before
     public void setUp() {
-        computerVisionHelper = new ComputerVisionHelper("/Users/tim/Documents/camera-pi/");
+        computerVisionHelper = new ComputerVisionHelper(".");
 
-        frame = new Mat();
-        camera.read(frame);
+//        frame = new Mat();
+//        camera.read(frame);
+        frame = Imgcodecs.imread("src/test/resources/stills/still-105147.439.jpg");
     }
 
     @Test
     public void testLaneDetection() {
         final List<Line> lines = computerVisionHelper.getLaneLines(frame);
-        computerVisionHelper.filterLines(lines, 5.0, Line.MAX_SLOPE)
+        computerVisionHelper.filterLines(lines)
                 .forEach(line -> line.draw(frame, new Scalar(0, 0, 255), 3));
 
         computerVisionHelper.writeImage(frame, "test-lanedetection");
