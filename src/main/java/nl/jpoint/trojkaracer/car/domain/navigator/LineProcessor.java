@@ -17,7 +17,7 @@ public class LineProcessor {
 
     private final double MAX_Y = 480d;
 
-    private final double SCAN_Y_MAX = 400d;
+    private final double SCAN_Y_MAX = 360d;
     private final int SCAN_STEP_SIZE = 4;
 
     private final int LINE_FUZZ = 6;
@@ -39,6 +39,8 @@ public class LineProcessor {
 
         List<Double> middles = new ArrayList<>();
         middles.add(avgMiddle);
+
+        boolean hasFoundBothSidesOnce = false;
 
         // Scan from 'bottom' of interest up:
         for(double ty = SCAN_Y_MAX; ty > scan_min_y; ty -= SCAN_STEP_SIZE) {
@@ -77,7 +79,15 @@ public class LineProcessor {
                 }
             }
 
-            if(closestLeft != null || closestRight != null) {
+            if(closestLeft == null && closestRight == null) {
+                continue;
+            }
+
+            if((closestLeft != null && closestRight != null)) {
+                hasFoundBothSidesOnce = true;
+            }
+
+            if(closestLeft != null && closestRight != null || !hasFoundBothSidesOnce) {
                 if(closestLeft == null) {
                     closestLeft = MIN_X;
                 }
