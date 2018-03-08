@@ -34,7 +34,7 @@ public class BasicNavigator implements Navigator {
     }
 
     private NavigationDirections navigateBetweenLines(final List<Line> lines) {
-        return lineProcessor.process(lines);
+        return lineProcessor.process(lines, null, null);
     }
 
 }

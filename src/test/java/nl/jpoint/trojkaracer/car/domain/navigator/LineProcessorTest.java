@@ -2,13 +2,17 @@ package nl.jpoint.trojkaracer.car.domain.navigator;
 
 import nl.jpoint.trojkaracer.car.domain.computervision.ComputerVisionHelper;
 import nl.jpoint.trojkaracer.car.domain.computervision.Line;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class LineProcessorTest {
@@ -28,12 +32,20 @@ public class LineProcessorTest {
     @Before
     public void setUp() {
         computerVisionHelper = new ComputerVisionHelper(".");
-        frame = Imgcodecs.imread("src/test/resources/stills/still-105147.439.jpg");
     }
 
     @Test
-    public void processImages() {
-        process("src/test/resources/stills/still-105147.439.jpg");
+    @Ignore
+    public void processAllImages() throws Exception {
+        Files.list(Paths.get("src/test/resources/stills/")).forEach(path -> {
+            process("src/test/resources/stills/" + path.getFileName().toString());
+        });
+    }
+
+    @Test
+    public void testAngles() throws Exception {
+        Assert.assertEquals(-12, process("src/test/resources/stills/still-105147.439.jpg").getDegrees());
+        Assert.assertEquals(-25, process("src/test/resources/stills/still-105302.608.jpg").getDegrees());
     }
 
     public NavigationDirections process(final String still) {
@@ -45,6 +57,6 @@ public class LineProcessorTest {
         final List<Line> lines = computerVisionHelper.filterLines(computerVisionHelper.getLaneLines(frame));
 
         // Put into processor:
-        return lineProcessor.process(lines);
+        return lineProcessor.process(lines, computerVisionHelper, frame);
     }
 }

@@ -72,8 +72,8 @@ public class ComputerVisionHelper {
         parameters.put(HOUGH_RHO, 2d);
         parameters.put(HOUGH_THETA, Math.PI / 180);
         parameters.put(HOUGH_THRESHOLD, 1);
-        parameters.put(HOUGH_MIN_LINE_LENGTH, 15);
-        parameters.put(HOUGH_MAX_GAP_SIZE, 5);
+        parameters.put(HOUGH_MIN_LINE_LENGTH, 10);
+        parameters.put(HOUGH_MAX_GAP_SIZE, 3);
 
         parameters.put(DETECT_LINE_SLOPE_MIN, 0.2);
         parameters.put(DETECT_LINE_SLOPE_MAX, 15d);
@@ -86,7 +86,8 @@ public class ComputerVisionHelper {
         parameters.put(LANE_LINE_COLOR_LOWER, new Scalar(100, 5, 75));
         parameters.put(LANE_LINE_COLOR_UPPER, new Scalar(180, 30, 250));
 
-        parameters.put(ROI_X_OFFSET_PERCENTAGE, 0.15d);
+        parameters.put(ROI_X_OFFSET_PERCENTAGE, 0d);
+//        parameters.put(ROI_X_OFFSET_PERCENTAGE, 0.15d);
         parameters.put(ROI_Y_TOP_PERCENTAGE, 0.50d);
         parameters.put(ROI_Y_MIDDLE_PERCENTAGE, 0.85d);
         parameters.put(ROI_Y_BOTTOM_PERCENTAGE, 1d);
