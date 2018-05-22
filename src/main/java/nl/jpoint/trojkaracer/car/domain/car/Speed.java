@@ -10,6 +10,8 @@ public class Speed {
 
     public static final int MAX_SPEED = 100;
     public static final int MIN_SPEED = -100;
+    private static final int SPEED_MIN_POS_THRESHOLD = 15;
+    private static final int SPEED_MIN_NEG_THRESHOLD = -15;
 
     private final int speedValue;
 
@@ -38,14 +40,20 @@ public class Speed {
     }
 
     /**
-     * Returns a new {@link Speed} instance with an increased speed; increased with the provided step.
+     * Returns a new {@link Speed} instance with an increased speed; increased with the provided step (and minding the minimal speed threshold).
      * @param increaseSpeedStep the speed step the current speed has to be increased with.
      * @return a new {@link Speed} instance with a new (increased) speed.
      * @throws DrivingCarException if the speed was increased while that should not be allowed.
      */
     public Speed increase(final int increaseSpeedStep) {
         if (speedValue < MAX_SPEED) {
-            final int newSpeed = speedValue + increaseSpeedStep;
+            int newSpeed = speedValue + increaseSpeedStep;
+            if (newSpeed < 0 && newSpeed > SPEED_MIN_NEG_THRESHOLD) {
+                newSpeed = 0;
+            } else if (newSpeed > 0 && newSpeed < SPEED_MIN_POS_THRESHOLD) {
+                newSpeed = SPEED_MIN_POS_THRESHOLD;
+            }
+
             return new Speed(Math.min(MAX_SPEED, newSpeed));
         } else {
             return this;
@@ -60,7 +68,12 @@ public class Speed {
      */
     public Speed decrease(final int decreaseSpeedStep) {
         if (speedValue > MIN_SPEED) {
-            final int newSpeed = speedValue - decreaseSpeedStep;
+            int newSpeed = speedValue - decreaseSpeedStep;
+            if (newSpeed < 0 && newSpeed > SPEED_MIN_NEG_THRESHOLD) {
+                newSpeed = SPEED_MIN_NEG_THRESHOLD;
+            } else if (newSpeed > 0 && newSpeed < SPEED_MIN_POS_THRESHOLD) {
+                newSpeed = 0;
+            }
             return new Speed(Math.max(MIN_SPEED, newSpeed));
         } else {
             return this;

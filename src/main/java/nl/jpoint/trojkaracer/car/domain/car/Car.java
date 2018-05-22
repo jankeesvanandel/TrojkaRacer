@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 public class Car {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final int SPEED_STEP = 2;
-    private static final int STEERING_STEP = 2;
+    private static final int SPEED_STEP = 3;
+    private static final int STEERING_STEP = 10;
 
     private final CarEngine carEngine;
 
@@ -34,15 +34,22 @@ public class Car {
     }
 
     public void drive(final Speed newSpeed, final Direction newDirection) {
-        if (newSpeed.getSpeedValue() == 0 && newDirection.getDegrees() == 0) {
+        final Direction calcDirection;
+        if (newDirection == null) {
+            calcDirection = direction;
+        } else {
+            calcDirection = newDirection;
+        }
+
+        if (newSpeed.getSpeedValue() == 0 && calcDirection.getDegrees() == 0) {
             stop();
         } else {
-            if (allowedChange(newSpeed, newDirection)) {
+            if (allowedChange(newSpeed, calcDirection)) {
                 speed = newSpeed;
-                direction = newDirection;
+                direction = calcDirection;
             } else {
                 LOGGER.warn("Received a speed ('{}') and direction ('{}') that is not allowed to apply to the car with the current speed ('{}') and direction " +
-                        "('{}').", newSpeed.getSpeedValue(), newDirection.getDegrees(), speed.getSpeedValue(), direction.getDegrees());
+                        "('{}').", newSpeed.getSpeedValue(), calcDirection.getDegrees(), speed.getSpeedValue(), direction.getDegrees());
                 LOGGER.warn("Stopping the car.");
                 stop();
             }
@@ -104,7 +111,9 @@ public class Car {
 
     private void updateEngineSteeringDirection() {
         LOGGER.debug("Updating car engine steering direction: {}", direction);
-        carEngine.updateDirection(direction);
+        if (direction != null) {
+            carEngine.updateDirection(direction);
+        }
     }
 
     /**

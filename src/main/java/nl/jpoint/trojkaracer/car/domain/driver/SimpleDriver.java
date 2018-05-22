@@ -33,7 +33,7 @@ public class SimpleDriver implements Driver {
      * @return the resulting drive command.
      */
     private DriveCommand mapNavigationDirectionToDriveCommand(final NavigationDirections navigationDirections) {
-        return AbsoluteDriveCommand.of(new Speed(1), new Direction(navigationDirections.getDegrees()));
+        return AbsoluteDriveCommand.of(new Speed(16), new Direction(navigationDirections.getDegrees()));
     }
 
     @Override

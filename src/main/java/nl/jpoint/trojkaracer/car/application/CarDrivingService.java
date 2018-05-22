@@ -55,7 +55,6 @@ public class CarDrivingService {
         LOGGER.info("Putting a new driver ({}) behind the wheel of the car.", newDriverInput.getClass().getSimpleName());
 
         car.stop();
-        publishCarStatus();
 
         if (activeSubscription != null) {
             activeSubscription.cancel();
@@ -63,6 +62,9 @@ public class CarDrivingService {
 
         driver = buildDriver();
         newDriverInput.subscribe(driver);
+
+        car.stop();
+        publishCarStatus();
     }
 
     private void processDriveCommand(final DriveCommand driveCommand) {
@@ -85,10 +87,17 @@ public class CarDrivingService {
             }
 
             @Override
+            protected void hookOnCancel() {
+                super.hookOnCancel();
+                LOGGER.info("Cancelling subscription, so stopping the car.");
+                car.stop();
+            }
+
+            @Override
             protected void hookFinally(final SignalType type) {
                 super.hookFinally(type);
 
-                LOGGER.error("Car driver received termination event of type '{}', so stopping car immediately", type);
+                LOGGER.warn("Car driver received termination event of type '{}', so stopping car immediately.", type);
                 car.stop();
             }
         };

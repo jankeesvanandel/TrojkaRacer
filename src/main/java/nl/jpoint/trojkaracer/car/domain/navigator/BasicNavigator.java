@@ -19,10 +19,10 @@ public class BasicNavigator implements Navigator {
 
     public BasicNavigator(final Flux<Mat> viewPublisher, final ComputerVisionHelper computerVisionHelper) {
         this.navigationDirectionsFlux = Flux.from(viewPublisher)
-                .doOnNext(image -> {
-                    Mat colorOfInterestImage = computerVisionHelper.filterToColor(image, new Scalar(15, 5, 25), new Scalar(180, 250, 250));
-                    computerVisionHelper.writeImage(computerVisionHelper.addLanesToImage(computerVisionHelper.convertGrayScaleToBGRColor(colorOfInterestImage)), "lanes");
-                })
+//                .doOnNext(image -> {
+//                    Mat colorOfInterestImage = computerVisionHelper.filterToColor(image, new Scalar(15, 5, 25), new Scalar(180, 250, 250));
+//                    computerVisionHelper.writeImage(computerVisionHelper.addLanesToImage(computerVisionHelper.convertGrayScaleToBGRColor(colorOfInterestImage)), "lanes");
+//                })
                 .map(computerVisionHelper::getLaneLines)
                 .map(computerVisionHelper::filterLines)
                 .map(this::navigateBetweenLines);

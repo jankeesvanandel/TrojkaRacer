@@ -22,10 +22,12 @@ import java.lang.invoke.MethodHandles;
 @Profile("production")
 public class PiOnboardPWMCarEngine implements CarEngine {
 
-    private static final int PWM_RANGE = 1024;
-    private static final int PWM_CLOCK = 600;
-    private static final int PWM_NEUTRAL = 130;
-    private static final int PWM_EFFECTIVE_RANGE = 75;
+    private static final int PWM_RANGE = 2000;
+    private static final int PWM_CLOCK = 192;
+    private static final int PWM_NEUTRAL_SPEED_CONTROLLER = 130;
+    private static final int PWM_NEUTRAL_STEERING = 150;
+    private static final int PWM_EFFECTIVE_RANGE_SPEED_CONTROLLER = 65;
+    private static final int PWM_EFFECTIVE_RANGE_STEERING = 75;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -46,14 +48,14 @@ public class PiOnboardPWMCarEngine implements CarEngine {
         Gpio.pwmSetRange(PWM_RANGE);
         Gpio.pwmSetClock(PWM_CLOCK);
 
-        motorPin.setPwm(PWM_NEUTRAL);
-        steeringPin.setPwm(PWM_NEUTRAL);
+        motorPin.setPwm(PWM_NEUTRAL_SPEED_CONTROLLER);
+        steeringPin.setPwm(PWM_NEUTRAL_STEERING);
     }
 
     @Override
     public void updateMotor(final Speed speed) {
-        int pwmSpeed = PWM_NEUTRAL;
-        int speedAdjustment = speed.getSpeedAsPercentage() * PWM_EFFECTIVE_RANGE / 100;
+        int pwmSpeed = PWM_NEUTRAL_SPEED_CONTROLLER;
+        int speedAdjustment = speed.getSpeedAsPercentage() * PWM_EFFECTIVE_RANGE_SPEED_CONTROLLER / 100;
 
         pwmSpeed += speedAdjustment;
         LOGGER.debug("Setting PWM Speed to {}", pwmSpeed);
@@ -62,8 +64,8 @@ public class PiOnboardPWMCarEngine implements CarEngine {
 
     @Override
     public void updateDirection(final Direction direction) {
-        int pwmDirection = PWM_NEUTRAL;
-        int directionAdjustment = direction.getDegreesAsPercentage() * PWM_EFFECTIVE_RANGE / 100;
+        int pwmDirection = PWM_NEUTRAL_STEERING;
+        int directionAdjustment = direction.getDegreesAsPercentage() * PWM_EFFECTIVE_RANGE_STEERING / 100;
 
         pwmDirection += directionAdjustment;
         LOGGER.debug("Setting PWM Direction to {}", pwmDirection);
